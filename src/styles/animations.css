@@ -1,0 +1,173 @@
+/* =============================================================================
+   ASHER'S BEES — SCROLL ANIMATION CLASSES
+
+   These classes define the HIDDEN state by default.
+   Add `.is-visible` (via GSAP ScrollTrigger) to transition to the VISIBLE state.
+
+   Usage:
+     <div class="slide-up">...</div>
+
+     // in your GSAP ScrollTrigger setup:
+     ScrollTrigger.create({
+       trigger: el,
+       start: 'top 85%',
+       onEnter: () => el.classList.add('is-visible'),
+     });
+   ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   SHARED TRANSITION SETTINGS
+   All animation classes share these timing defaults. Override per-class below.
+   ----------------------------------------------------------------------------- */
+
+:root {
+  --anim-duration:    840ms;
+  --anim-easing:      cubic-bezier(0.16, 1, 0.3, 1);   /* expo-out — snappy settle */
+  --anim-delay-step:  112ms;   /* for staggered children, increment manually */
+}
+
+
+/* -----------------------------------------------------------------------------
+   .fade-in
+   Pure opacity reveal — use for anything that shouldn't shift position.
+   ----------------------------------------------------------------------------- */
+
+.fade-in {
+  opacity: 0;
+  transition:
+    opacity var(--anim-duration) var(--anim-easing);
+}
+
+.fade-in.is-visible {
+  opacity: 1;
+}
+
+
+/* -----------------------------------------------------------------------------
+   .slide-up
+   Fades in while rising from 40px below — the default entry for most content.
+   ----------------------------------------------------------------------------- */
+
+.slide-up {
+  opacity: 0;
+  transform: translateY(40px);
+  transition:
+    opacity  var(--anim-duration) var(--anim-easing),
+    transform var(--anim-duration) var(--anim-easing);
+}
+
+.slide-up.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+/* -----------------------------------------------------------------------------
+   .slide-in-left
+   Fades in while moving from 40px to the left — for text/content on right side.
+   ----------------------------------------------------------------------------- */
+
+.slide-in-left {
+  opacity: 0;
+  transform: translateX(-40px);
+  transition:
+    opacity  var(--anim-duration) var(--anim-easing),
+    transform var(--anim-duration) var(--anim-easing);
+}
+
+.slide-in-left.is-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+
+/* -----------------------------------------------------------------------------
+   .slide-in-right
+   Fades in while moving from 40px to the right — for text/content on left side.
+   ----------------------------------------------------------------------------- */
+
+.slide-in-right {
+  opacity: 0;
+  transform: translateX(40px);
+  transition:
+    opacity  var(--anim-duration) var(--anim-easing),
+    transform var(--anim-duration) var(--anim-easing);
+}
+
+.slide-in-right.is-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+
+/* -----------------------------------------------------------------------------
+   .parallax
+   Container for parallax background sections.
+   GSAP ScrollTrigger will animate the `--parallax-offset` custom property
+   (or directly set transform/backgroundPosition) via scrub.
+
+   Usage with GSAP:
+     gsap.to('.parallax', {
+       backgroundPositionY: '30%',
+       ease: 'none',
+       scrollTrigger: { trigger: '.parallax', start: 'top bottom', end: 'bottom top', scrub: true },
+     });
+   ----------------------------------------------------------------------------- */
+
+.parallax {
+  position: relative;
+  overflow: hidden;
+  background-attachment: scroll;   /* JS will handle the motion; avoid fixed on mobile */
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  will-change: background-position;
+}
+
+/* The inner content sits on top of the parallax background */
+.parallax__content {
+  position: relative;
+  z-index: var(--z-raised, 10);
+}
+
+
+/* -----------------------------------------------------------------------------
+   STAGGER HELPERS
+   Add delay to nth children so staggered lists animate sequentially
+   without needing JS per-element setup.
+   ----------------------------------------------------------------------------- */
+
+.stagger-children > *:nth-child(1)  { transition-delay: calc(var(--anim-delay-step) * 0); }
+.stagger-children > *:nth-child(2)  { transition-delay: calc(var(--anim-delay-step) * 1); }
+.stagger-children > *:nth-child(3)  { transition-delay: calc(var(--anim-delay-step) * 2); }
+.stagger-children > *:nth-child(4)  { transition-delay: calc(var(--anim-delay-step) * 3); }
+.stagger-children > *:nth-child(5)  { transition-delay: calc(var(--anim-delay-step) * 4); }
+.stagger-children > *:nth-child(6)  { transition-delay: calc(var(--anim-delay-step) * 5); }
+.stagger-children > *:nth-child(7)  { transition-delay: calc(var(--anim-delay-step) * 6); }
+.stagger-children > *:nth-child(8)  { transition-delay: calc(var(--anim-delay-step) * 7); }
+
+
+/* -----------------------------------------------------------------------------
+   REDUCED MOTION OVERRIDE
+   Honor the user's OS-level preference — skip all motion entirely.
+   ----------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-in,
+  .slide-up,
+  .slide-in-left,
+  .slide-in-right {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .parallax {
+    background-attachment: scroll;
+    will-change: auto;
+  }
+
+  .stagger-children > * {
+    transition-delay: 0ms;
+  }
+}

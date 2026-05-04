@@ -1,0 +1,67 @@
+backend:
+  name: git-gateway
+  branch: main
+
+# Enables draft/review workflow before publishing
+publish_mode: editorial_workflow
+
+# Where uploaded images are stored (served from /blog-images/...)
+media_folder: "public/blog-images"
+public_folder: "/blog-images"
+
+collections:
+  - name: "blog"
+    label: "Blog Posts"
+    folder: "src/content/blog"
+    create: true
+    slug: "{{slug}}"
+    # Support both .md and .mdx files
+    extension: "mdx"
+    format: "frontmatter"
+    fields:
+      - label: "Title"
+        name: "title"
+        widget: "string"
+        hint: "The headline shown on the post and in the browser tab."
+
+      - label: "Description"
+        name: "description"
+        widget: "text"
+        hint: "A one or two sentence summary shown in the post list."
+
+      - label: "Publish Date"
+        name: "pubDate"
+        widget: "datetime"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+        hint: "The date that appears on the post."
+
+      - label: "Author"
+        name: "author"
+        widget: "string"
+        default: "Asher Bernstein"
+
+      - label: "Cover Image"
+        name: "image"
+        widget: "object"
+        required: false
+        hint: "Optional cover image shown at the top of the post."
+        fields:
+          - label: "Image File"
+            name: "url"
+            widget: "image"
+            required: false
+          - label: "Alt Text"
+            name: "alt"
+            widget: "string"
+            required: false
+            hint: "Describe the image for screen readers."
+
+      - label: "Tags"
+        name: "tags"
+        widget: "list"
+        hint: "Comma-separated topics, e.g. honey, harvest, NYC."
+
+      - label: "Body"
+        name: "body"
+        widget: "markdown"

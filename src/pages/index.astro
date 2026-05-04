@@ -1,0 +1,892 @@
+---
+import { getCollection } from 'astro:content';
+import FormattedDate from '../components/FormattedDate.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const allPosts = await getCollection('blog');
+const recentPosts = allPosts
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
+
+const [featuredPost, ...supportingPosts] = recentPosts;
+---
+
+<BaseLayout
+  title="Asher's Bees — Raw Honey from Turtle Bay Gardens, Manhattan"
+  description="Small-batch urban beekeeping in Turtle Bay Gardens, Manhattan."
+>
+
+  <!-- ======================================================================
+       HERO
+       Bottom-anchored typographic composition. Hex graphic floats top-right.
+       ====================================================================== -->
+  <section class="hero" aria-label="Hero">
+
+    <div class="hero-bg" aria-hidden="true">
+      <img src="/images/hero.jpeg" alt="" class="hero-bg-img" />
+      <div class="hero-bg-overlay"></div>
+    </div>
+
+    <svg class="hero-hex-bg" viewBox="0 0 520 600" fill="none" aria-hidden="true">
+      <polygon points="260,12 508,155 508,441 260,584 12,441 12,155" stroke="#006C32" stroke-width="0.8"/>
+      <polygon points="260,72 448,186 448,414 260,528 72,414 72,186"  stroke="#006C32" stroke-width="0.6"/>
+      <polygon points="260,132 388,217 388,387 260,472 132,387 132,217" stroke="#006C32" stroke-width="0.4"/>
+      <polygon points="260,192 328,248 328,360 260,416 192,360 192,248" stroke="#006C32" stroke-width="0.3"/>
+    </svg>
+
+    <div class="hero-glow" aria-hidden="true"></div>
+
+    <div class="hero-float-hexes" aria-hidden="true">
+      <svg viewBox="0 0 1200 900" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Green hexagons -->
+        <polygon class="hx hx-a" points="100,125 121.6,137.5 121.6,162.5 100,175 78.4,162.5 78.4,137.5" stroke="#006C32" stroke-width="1" opacity="0.08" style="animation-duration:14s;animation-delay:-3s"/>
+        <polygon class="hx hx-b" points="550,180 567.3,190 567.3,210 550,220 532.7,210 532.7,190" stroke="#006C32" stroke-width="1" opacity="0.10" style="animation-duration:12s;animation-delay:-7s"/>
+        <polygon class="hx hx-c" points="200,455 239,477.5 239,522.5 200,545 161,522.5 161,477.5" stroke="#006C32" stroke-width="1" opacity="0.07" style="animation-duration:20s;animation-delay:-11s"/>
+        <polygon class="hx hx-d" points="450,330 510.6,365 510.6,435 450,470 389.4,435 389.4,365" stroke="#006C32" stroke-width="0.8" opacity="0.05" style="animation-duration:25s;animation-delay:-5s"/>
+        <polygon class="hx hx-a" points="750,65 797.6,92.5 797.6,147.5 750,175 702.4,147.5 702.4,92.5" stroke="#006C32" stroke-width="0.8" opacity="0.06" style="animation-duration:19s;animation-delay:-9s"/>
+        <polygon class="hx hx-b" points="950,685 963,692.5 963,707.5 950,715 937,707.5 937,692.5" stroke="#006C32" stroke-width="1" opacity="0.11" style="animation-duration:11s;animation-delay:-2s"/>
+        <polygon class="hx hx-c" points="130,652 154.2,666 154.2,694 130,708 105.8,694 105.8,666" stroke="#006C32" stroke-width="1" opacity="0.09" style="animation-duration:17s;animation-delay:-14s"/>
+        <!-- Gold hexagons -->
+        <polygon class="hx hx-b" points="320,30 363.3,55 363.3,105 320,130 276.7,105 276.7,55" stroke="#D4A030" stroke-width="0.8" opacity="0.07" style="animation-duration:18s;animation-delay:-6s"/>
+        <polygon class="hx hx-d" points="900,270 969.3,310 969.3,390 900,430 830.7,390 830.7,310" stroke="#D4A030" stroke-width="0.6" opacity="0.05" style="animation-duration:22s;animation-delay:-16s"/>
+        <polygon class="hx hx-a" points="1100,70 1125.98,85 1125.98,115 1100,130 1074.02,115 1074.02,85" stroke="#D4A030" stroke-width="1" opacity="0.08" style="animation-duration:16s;animation-delay:-4s"/>
+        <polygon class="hx hx-c" points="700,628 719.05,639 719.05,661 700,672 680.95,661 680.95,639" stroke="#D4A030" stroke-width="1" opacity="0.12" style="animation-duration:13s;animation-delay:-8s"/>
+        <polygon class="hx hx-b" points="1050,532 1065.6,541 1065.6,559 1050,568 1034.4,559 1034.4,541" stroke="#D4A030" stroke-width="1" opacity="0.10" style="animation-duration:15s;animation-delay:-1s"/>
+        <polygon class="hx hx-a" points="600,440 634.6,460 634.6,500 600,520 565.4,500 565.4,460" stroke="#D4A030" stroke-width="0.8" opacity="0.06" style="animation-duration:21s;animation-delay:-12s"/>
+        <polygon class="hx hx-d" points="350,635 406.3,667.5 406.3,732.5 350,765 293.7,732.5 293.7,667.5" stroke="#D4A030" stroke-width="0.6" opacity="0.05" style="animation-duration:24s;animation-delay:-18s"/>
+      </svg>
+    </div>
+
+    <div class="hero-body">
+      <div class="hero-title-group">
+        <span class="hero-line1" aria-hidden="true">Asher's</span>
+        <div class="hero-rule-wrap" aria-hidden="true">
+          <span class="hero-rule-line"></span>
+        </div>
+        <span class="hero-line2" aria-hidden="true">Bees</span>
+        <h1 class="sr-only">Asher's Bees</h1>
+      </div>
+
+      <p class="hero-tagline">Urban beekeeping in Turtle Bay Gardens, Manhattan</p>
+
+      <p class="hero-est">Est. 2026 &middot; Turtle Bay Gardens</p>
+      <a href="/blog" class="hero-blog-btn">Read the Blog</a>
+
+      <div class="hero-footer">
+        <div class="hero-info">
+          <p class="hero-location">Turtle Bay Gardens, Manhattan</p>
+          <a href="#intro" class="hero-scroll-cta" aria-label="Scroll to content">
+            <svg width="12" height="18" viewBox="0 0 12 18" fill="none" aria-hidden="true">
+              <line x1="6" y1="0" x2="6" y2="14" stroke="currentColor" stroke-width="1"/>
+              <path d="M1 10l5 6 5-6" stroke="currentColor" stroke-width="1"
+                    stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+            Scroll
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-chevron" aria-hidden="true">
+      <svg width="16" height="24" viewBox="0 0 16 24" fill="none">
+        <line x1="8" y1="0" x2="8" y2="16" stroke="currentColor" stroke-width="1"/>
+        <path d="M1 12l7 10 7-10" stroke="currentColor" stroke-width="1"
+              stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    </div>
+
+  </section>
+
+
+  <!-- ======================================================================
+       INTRO — light surface
+       ====================================================================== -->
+  <section class="intro-section surface" id="intro" aria-label="About">
+    <div class="container">
+
+      <div class="intro-grid">
+        <div class="intro-text slide-up">
+          <span class="intro-label text-label">About</span>
+          <h2 class="intro-heading">From Hive<br />to Home</h2>
+          <p class="intro-body">A sixteen-year-old beekeeper, a rooftop hive, and a hidden garden in the middle of Manhattan.</p>
+          <a href="/about" class="intro-cta">
+            More about Asher
+            <svg width="16" height="10" viewBox="0 0 16 10" fill="none" aria-hidden="true">
+              <path d="M0 5h14M10 1l4 4-4 4" stroke="currentColor" stroke-width="1.2"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
+
+        <div class="intro-photo slide-up" style="transition-delay: 180ms;">
+          <img src="/images/bees-honeycomb.jpeg" alt="Bees working on honeycomb" class="intro-photo-img" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ======================================================================
+       RECENT POSTS — dark background
+       ====================================================================== -->
+  <section class="posts-section" aria-label="Latest posts">
+    <div class="container">
+
+      <header class="posts-header slide-up">
+        <span class="text-label posts-eyebrow">From the Blog</span>
+        <h2 class="posts-heading">Recent Posts</h2>
+      </header>
+
+      {recentPosts.length > 0 ? (
+        <div class="posts-editorial">
+
+          {featuredPost && (
+            <article class="card card--feature slide-up">
+              <a href={`/blog/${featuredPost.id}/`} class="card-image-link" tabindex="-1" aria-hidden="true">
+                <div class="card-image">
+                  <img src="/images/frame-holding.jpeg" alt="" class="card-img" />
+                </div>
+              </a>
+              <div class="card-body">
+                <div class="card-meta">
+                  <time class="card-date"><FormattedDate date={featuredPost.data.pubDate} /></time>
+                  {featuredPost.data.tags.slice(0, 2).map(t => <span class="card-tag">{t}</span>)}
+                </div>
+                <h3 class="card-title">
+                  <a href={`/blog/${featuredPost.id}/`} class="card-title-link">{featuredPost.data.title}</a>
+                </h3>
+                <p class="card-desc">{featuredPost.data.description}</p>
+                <a href={`/blog/${featuredPost.id}/`} class="card-cta">
+                  Read More
+                  <svg width="14" height="9" viewBox="0 0 16 10" fill="none" aria-hidden="true">
+                    <path d="M0 5h14M10 1l4 4-4 4" stroke="currentColor" stroke-width="1.3"
+                          stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+              </div>
+            </article>
+          )}
+
+          {supportingPosts.length > 0 && (
+            <div class="cards-supporting">
+              {supportingPosts.map((post, i) => (
+                <article class="card card--secondary slide-up" style={`transition-delay: ${(i + 1) * 110}ms`}>
+                  <a href={`/blog/${post.id}/`} class="card-image-link" tabindex="-1" aria-hidden="true">
+                    <div class="card-image">
+                      <img src={i === 0 ? '/images/rooftop-work.jpeg' : '/images/rooftop-hives.jpeg'} alt="" class="card-img" />
+                    </div>
+                  </a>
+                  <div class="card-body">
+                    <div class="card-meta">
+                      <time class="card-date"><FormattedDate date={post.data.pubDate} /></time>
+                      {post.data.tags.slice(0, 1).map(t => <span class="card-tag">{t}</span>)}
+                    </div>
+                    <h3 class="card-title card-title--sm">
+                      <a href={`/blog/${post.id}/`} class="card-title-link">{post.data.title}</a>
+                    </h3>
+                    <a href={`/blog/${post.id}/`} class="card-cta">
+                      Read More
+                      <svg width="14" height="9" viewBox="0 0 16 10" fill="none" aria-hidden="true">
+                        <path d="M0 5h14M10 1l4 4-4 4" stroke="currentColor" stroke-width="1.3"
+                              stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </a>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+
+        </div>
+      ) : (
+        <p class="posts-empty fade-in">First post coming soon.</p>
+      )}
+
+      <div class="posts-more slide-up">
+        <a href="/blog" class="more-link">
+          All posts
+          <svg width="16" height="10" viewBox="0 0 16 10" fill="none" aria-hidden="true">
+            <path d="M0 5h14M10 1l4 4-4 4" stroke="currentColor" stroke-width="1.2"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ======================================================================
+       BANNER — emerald green background
+       ====================================================================== -->
+  <section class="banner-section fade-in" aria-label="Location">
+
+    <svg class="banner-hex-pattern" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="bhex" x="0" y="0" width="35" height="60" patternUnits="userSpaceOnUse">
+          <polygon points="17.5,0 35,10 35,30 17.5,40 0,30 0,10"
+                   fill="none" stroke="white" stroke-width="0.6"/>
+          <polygon points="0,30 17.5,40 17.5,60 0,70 -17.5,60 -17.5,40"
+                   fill="none" stroke="white" stroke-width="0.6"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#bhex)" opacity="0.06"/>
+    </svg>
+
+    <div class="banner-content">
+      <p class="banner-label text-label">Est. 2026 &middot; Turtle Bay Gardens, NYC</p>
+      <h2 class="banner-headline">
+        <span class="banner-line1">Turtle Bay Gardens, Manhattan</span>
+        <span class="banner-line2">Rooftop bees in a hidden city garden</span>
+      </h2>
+    </div>
+
+  </section>
+
+</BaseLayout>
+
+
+<style>
+
+  /* ─── HERO ──────────────────────────────────────────────────────────────── */
+
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 64px var(--space-md) var(--space-md);
+    overflow: hidden;
+    background-color: var(--color-bg);
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .hero-bg-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .hero-bg-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+  }
+
+  .hero-hex-bg {
+    position: absolute;
+    top: -5%;
+    right: -8%;
+    width: min(55vw, 520px);
+    height: auto;
+    opacity: 0.06;
+    pointer-events: none;
+    animation: hex-float 17s ease-in-out infinite;
+  }
+
+  @keyframes hex-float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50%       { transform: translateY(-18px) rotate(3deg); }
+  }
+
+  .hero-glow {
+    position: absolute;
+    top: -10%;
+    left: -5%;
+    width: 50%;
+    height: 60%;
+    background: radial-gradient(ellipse at center,
+      rgba(0, 108, 50, 0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-body {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .hero-title-group { display: flex; flex-direction: column; gap: 0; }
+
+  .hero-line1 {
+    display: block;
+    font-family: var(--font-heading);
+    font-style: normal;
+    font-weight: var(--font-weight-heading-bold);
+    font-size: clamp(4.5rem, 13vw, 11.5rem);
+    line-height: 0.92;
+    letter-spacing: -0.025em;
+    color: var(--color-text-on-dark);
+    font-feature-settings: 'kern' 1;
+    animation: title-enter 1.4s var(--ease-out) 0.1s both;
+  }
+
+  .hero-rule-wrap {
+    display: block;
+    padding-block: 0.35em;
+    animation: rule-enter 1.4s var(--ease-out) 0.3s both;
+  }
+
+  .hero-rule-line {
+    display: block;
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(90deg,
+      var(--color-accent) 0%,
+      rgba(212, 160, 48, 0.4) 35%,
+      transparent 70%);
+  }
+
+  .hero-line2 {
+    display: block;
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-weight: var(--font-weight-heading-bold);
+    font-size: clamp(4.5rem, 13vw, 11.5rem);
+    line-height: 0.92;
+    letter-spacing: -0.025em;
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--color-accent);
+    font-feature-settings: 'kern' 1;
+    animation: title-enter 1.4s var(--ease-out) 0.45s both;
+  }
+
+  .hero-tagline {
+    font-family: var(--font-body);
+    font-size: var(--text-body-sm);
+    font-weight: var(--font-weight-body-light);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(237, 236, 232, 0.35);
+    margin: 0;
+    padding-top: var(--space-xs);
+    animation: info-enter 1.4s var(--ease-out) 0.6s both;
+  }
+
+  .hero-chevron {
+    position: absolute;
+    bottom: var(--space-md);
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(237, 236, 232, 0.18);
+    animation: bounce-subtle 3.5s ease-in-out 2.5s infinite;
+  }
+
+  .hero-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: var(--space-sm);
+    animation: info-enter 1.4s var(--ease-out) 0.7s both;
+  }
+
+  .hero-info {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+  }
+
+  .hero-location {
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-green);
+    margin: 0;
+  }
+
+  .hero-subtitle {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: clamp(1rem, 2vw, 1.375rem);
+    color: rgba(237, 236, 232, 0.45);
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  .hero-scroll-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 5px;
+    font-family: var(--font-body);
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(237, 236, 232, 0.3);
+    text-decoration: none;
+    transition: color 280ms;
+    animation: bounce-subtle 3.5s ease-in-out 2s infinite;
+  }
+
+  .hero-scroll-cta:hover { color: var(--color-accent); }
+
+  @keyframes title-enter {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes rule-enter {
+    from { opacity: 0; transform: scaleX(0); transform-origin: left; }
+    to   { opacity: 1; transform: scaleX(1); }
+  }
+  @keyframes info-enter {
+    from { opacity: 0; transform: translateX(20px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes bounce-subtle {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(5px); }
+  }
+
+  /* ─── FLOATING HEX BACKGROUND ───────────────────────────────────────────── */
+
+  .hero-float-hexes {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .hero-float-hexes svg { width: 100%; height: 100%; }
+
+  .hx { animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+
+  .hx-a {
+    animation-name: hfloat-a;
+  }
+  .hx-b {
+    animation-name: hfloat-b;
+  }
+  .hx-c {
+    animation-name: hfloat-c;
+  }
+  .hx-d {
+    animation-name: hfloat-d;
+  }
+
+  @keyframes hfloat-a {
+    0%, 100% { transform: translateY(0) translateX(0) rotate(0deg); }
+    25%  { transform: translateY(-18px) translateX(6px) rotate(5deg); }
+    50%  { transform: translateY(-32px) translateX(-4px) rotate(10deg); }
+    75%  { transform: translateY(-14px) translateX(8px) rotate(7deg); }
+  }
+  @keyframes hfloat-b {
+    0%, 100% { transform: translateY(0) translateX(0) rotate(0deg); }
+    33%  { transform: translateY(-22px) translateX(-7px) rotate(-7deg); }
+    66%  { transform: translateY(-40px) translateX(5px) rotate(-14deg); }
+  }
+  @keyframes hfloat-c {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    40%  { transform: translateY(-28px) translateX(10px) rotate(12deg); }
+    70%  { transform: translateY(-20px) translateX(-6px) rotate(8deg); }
+  }
+  @keyframes hfloat-d {
+    0%, 100% { transform: translateY(0) translateX(0) rotate(0deg); }
+    50%  { transform: translateY(-35px) translateX(3px) rotate(-18deg); }
+  }
+
+  /* ─── HERO EST + BLOG BUTTON ────────────────────────────────────────────── */
+
+  .hero-est {
+    font-family: var(--font-body);
+    font-size: 0.6rem;
+    font-weight: var(--font-weight-body-medium);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin: 0;
+    padding-top: 0.25rem;
+    animation: info-enter 1.4s var(--ease-out) 0.65s both;
+  }
+
+  .hero-blog-btn {
+    display: inline-block;
+    align-self: flex-start;
+    margin-top: var(--space-xs);
+    padding: 0.75rem 3rem;
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    font-weight: var(--font-weight-body-medium);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    background: transparent;
+    border: 1px solid var(--color-accent);
+    text-decoration: none;
+    transition: background 280ms, color 280ms;
+    animation: info-enter 1.4s var(--ease-out) 0.75s both;
+  }
+
+  .hero-blog-btn:hover {
+    background: var(--color-accent);
+    color: #0a0a0a;
+  }
+
+
+  /* ─── INTRO ─────────────────────────────────────────────────────────────── */
+
+  .intro-section {
+    padding-top: var(--space-lg);
+    padding-bottom: var(--space-lg);
+  }
+
+  .intro-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg);
+    align-items: start;
+  }
+
+  .intro-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .intro-label { color: var(--color-green); letter-spacing: 0.16em; }
+
+  .intro-heading {
+    font-family: var(--font-heading);
+    font-weight: var(--font-weight-heading-bold);
+    font-size: var(--text-h2);
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    color: var(--color-text-on-light);
+    margin: 0;
+  }
+
+  .intro-body {
+    font-family: var(--font-body);
+    font-size: var(--text-body-lg);
+    color: rgba(10, 10, 10, 0.5);
+    font-style: italic;
+    line-height: var(--leading-body);
+    margin: 0;
+  }
+
+  .intro-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: var(--space-xs);
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    font-weight: var(--font-weight-body-medium);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-green);
+    text-decoration: none;
+    transition: gap 280ms, color 280ms;
+  }
+
+  .intro-cta:hover { gap: 13px; color: var(--color-green-dark); }
+
+  .intro-photo {
+    aspect-ratio: 4 / 5;
+    border-radius: 0;
+    overflow: hidden;
+    border: 4px solid #D4A030;
+  }
+
+  .intro-photo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+
+  /* ─── POSTS ─────────────────────────────────────────────────────────────── */
+
+  .posts-section {
+    background-color: var(--color-bg);
+    padding-block: var(--space-lg);
+  }
+
+  .posts-header { margin-bottom: var(--space-md); }
+
+  .posts-eyebrow {
+    display: block;
+    margin-bottom: var(--space-xs);
+    color: var(--color-accent);
+    letter-spacing: 0.18em;
+  }
+
+  .posts-heading {
+    font-family: var(--font-heading);
+    font-weight: var(--font-weight-heading-bold);
+    font-size: var(--text-h2);
+    color: var(--color-text-on-dark);
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+
+  .posts-editorial {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: var(--space-md);
+    align-items: start;
+  }
+
+  .cards-supporting {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  /* Card */
+  .card {
+    background-color: #0F0F0F;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 560ms var(--ease-out), box-shadow 560ms var(--ease-out),
+                border-color 560ms var(--ease-out);
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+    border-color: rgba(0, 108, 50, 0.2);
+  }
+
+  .card-image-link { display: block; overflow: hidden; flex-shrink: 0; border: 2px solid #D4A030; }
+  .card--feature   .card-image-link { aspect-ratio: 16 / 10; }
+  .card--secondary .card-image-link { aspect-ratio: 16 / 7; }
+
+  .card-image {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 700ms var(--ease-out);
+  }
+
+  .card:hover .card-img { transform: scale(1.04); }
+
+  .card-body {
+    padding: var(--space-sm) var(--space-md) var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+
+  .card-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+  .card-date {
+    font-family: var(--font-body);
+    font-size: var(--text-body-xs);
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+  }
+
+  .card-tag {
+    font-family: var(--font-body);
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-green);
+    padding: 1px 8px;
+    border: 1px solid rgba(0, 108, 50, 0.3);
+    border-radius: var(--radius-full);
+  }
+
+  .card-title {
+    font-family: var(--font-heading);
+    font-weight: var(--font-weight-heading-bold);
+    font-size: var(--text-h4);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--color-text-on-dark);
+    margin: 0;
+  }
+
+  .card-title--sm { font-size: var(--text-h5); }
+
+  .card-title-link { color: inherit; text-decoration: none; transition: color 280ms; }
+  .card-title-link:hover { color: var(--color-accent); }
+
+  .card-desc {
+    font-family: var(--font-body);
+    font-size: var(--text-body-sm);
+    color: var(--color-text-muted);
+    line-height: 1.65;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: auto;
+    padding-top: var(--space-xs);
+    font-family: var(--font-body);
+    font-size: 0.6rem;
+    font-weight: var(--font-weight-body-medium);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    text-decoration: none;
+    transition: gap 280ms, color 280ms;
+  }
+
+  .card-cta:hover { gap: 10px; color: var(--color-accent-dark); }
+
+  .posts-more {
+    margin-top: var(--space-md);
+    padding-top: var(--space-md);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .more-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(237, 236, 232, 0.3);
+    text-decoration: none;
+    transition: color 280ms, gap 280ms;
+  }
+
+  .more-link:hover { color: var(--color-text-on-dark); gap: 13px; }
+
+  .posts-empty {
+    text-align: center;
+    color: var(--color-text-muted);
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-h5);
+    padding: var(--space-lg) 0;
+    margin: 0;
+  }
+
+
+  /* ─── BANNER — emerald green ─────────────────────────────────────────────── */
+
+  .banner-section {
+    position: relative;
+    background-color: var(--color-green);
+    overflow: hidden;
+    padding-block: var(--space-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .banner-hex-pattern {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .banner-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding-inline: var(--space-sm);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .banner-label {
+    display: block;
+    color: rgba(212, 160, 48, 0.8);
+    letter-spacing: 0.2em;
+  }
+
+  .banner-headline {
+    display: flex;
+    flex-direction: column;
+    gap: 0.05em;
+    font-family: var(--font-heading);
+    font-weight: var(--font-weight-heading-bold);
+    font-size: clamp(2.5rem, 7vw, 6rem);
+    line-height: 0.95;
+    letter-spacing: -0.025em;
+    margin: 0;
+  }
+
+  /* Solid white on green */
+  .banner-line1 {
+    color: rgba(255, 255, 255, 0.9);
+    font-style: normal;
+  }
+
+  /* Outlined gold on green */
+  .banner-line2 {
+    font-style: italic;
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--color-accent);
+  }
+
+
+  /* ─── RESPONSIVE ────────────────────────────────────────────────────────── */
+
+  @media (max-width: 960px) {
+    .posts-editorial { grid-template-columns: 1fr; }
+    .cards-supporting { display: grid; grid-template-columns: repeat(2, 1fr); }
+    .card--secondary .card-image-link { aspect-ratio: 16 / 9; }
+  }
+
+  @media (max-width: 768px) {
+    .hero { padding-inline: var(--space-sm); }
+
+    .intro-grid { grid-template-columns: 1fr; gap: var(--space-md); }
+    .intro-photo { order: -1; aspect-ratio: 4 / 3; }
+.cards-supporting { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 480px) {
+    .hero-line2   { -webkit-text-stroke-width: 1px; }
+    .banner-line2 { -webkit-text-stroke-width: 1px; }
+  }
+</style>
+
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  gsap.registerPlugin(ScrollTrigger);
+
+  const heroHex = document.querySelector('.hero-hex-bg') as SVGElement | null;
+  if (heroHex) {
+    gsap.to(heroHex, {
+      yPercent: -25,
+      ease: 'none',
+      scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 0.8 },
+    });
+  }
+</script>

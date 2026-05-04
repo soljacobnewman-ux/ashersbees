@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fieldston Eagles Athletics</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: { DEFAULT: '#0A1F3D', light: '#122850', dark: '#060F1E' },
+            orange: { DEFAULT: '#E87722', light: '#F09040', dark: '#C4611A' },
+            cream: { DEFAULT: '#F5F1E8', dark: '#EDE8DA' },
+          },
+          fontFamily: {
+            serif: ['Playfair Display', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { background-color: #F5F1E8; font-family: 'Inter', sans-serif; margin: 0; -webkit-font-smoothing: antialiased; }
+    #root { min-height: 100vh; }
+
+    /* ── Hero animated gradient ── */
+    @keyframes glowDrift1 {
+      0%, 100% { opacity: 0.18; transform: scale(1)   translate(0px, 0px);   }
+      33%       { opacity: 0.24; transform: scale(1.18) translate(28px, -20px); }
+      66%       { opacity: 0.14; transform: scale(0.92) translate(-12px, 15px); }
+    }
+    @keyframes glowDrift2 {
+      0%, 100% { opacity: 0.10; transform: scale(1.08) translate(0px, 0px);   }
+      40%       { opacity: 0.14; transform: scale(0.9)  translate(-22px, 18px); }
+      75%       { opacity: 0.08; transform: scale(1.15) translate(16px, -10px); }
+    }
+    @keyframes glowDrift3 {
+      0%, 100% { opacity: 0.06; transform: scale(1) translate(0,0); }
+      50%       { opacity: 0.10; transform: scale(1.1) translate(10px, 8px); }
+    }
+
+    /* ── LIVE scoreboard pulse ── */
+    @keyframes liveDot {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(232, 119, 34, 0.7); }
+      50%       { box-shadow: 0 0 0 5px rgba(232, 119, 34, 0);  }
+    }
+    .live-dot { animation: liveDot 1.6s ease-in-out infinite; }
+
+    /* ── Fade-up entrance ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0);    }
+    }
+    .fade-up { animation: fadeUp 0.7s cubic-bezier(0.22,1,0.36,1) both; }
+    .fade-up-1 { animation-delay: 0.00s; }
+    .fade-up-2 { animation-delay: 0.11s; }
+    .fade-up-3 { animation-delay: 0.22s; }
+    .fade-up-4 { animation-delay: 0.33s; }
+
+    /* ── Slide-left entrance ── */
+    @keyframes slideLeft {
+      from { opacity: 0; transform: translateX(-30px); }
+      to   { opacity: 1; transform: translateX(0);     }
+    }
+
+    /* ── Scrollbar hide ── */
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* ── Typography base ── */
+    .font-serif { font-family: 'Playfair Display', Georgia, serif; }
+    .divider-diamond::before {
+      content: '◆'; color: #E87722;
+      margin: 0 0.65rem; font-size: 0.5rem; vertical-align: middle;
+    }
+
+    /* ── Mobile nav drawer ── */
+    .mobile-nav-enter  { transform: translateY(-8px); opacity: 0; }
+    .mobile-nav-active { transform: translateY(0);    opacity: 1; transition: all 0.22s ease; }
+
+    /* ── Team card hover ── */
+    .team-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .team-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 14px 36px rgba(10,31,61,0.15);
+    }
+    .team-card-champ:hover {
+      box-shadow: 0 16px 40px rgba(232,119,34,0.2);
+    }
+
+    /* ── Champ card hover ── */
+    .champ-card {
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    .champ-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(10,31,61,0.1);
+    }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+/* ─── COUNT-UP HOOK (replaces useInView + animate from Framer Motion) ── */
+
+function useCountUp(target, deps) {
+  const [display, setDisplay] = useState(0);
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      observer.disconnect();
+      let startTs = null;
+      const duration = 1500;
+      function step(ts) {
+        if (!startTs) startTs = ts;
+        const progress = Math.min((ts - startTs) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        setDisplay(Math.round(eased * target));
+        if (progress < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }, { rootMargin: '-40px' });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, deps || [target]);
+  return [display, ref];
+}
+
+/* ─── DATA ─────────────────────────────────────────────── */
+
+const LIVE_SCORES = [
+  { sport: 'Boys Varsity Basketball', home: 'Fieldston',  homeScore: 44, away: 'Horace Mann', awayScore: 38, status: 'Q4 3:22', isHome: true,  isLive: true  },
+  { sport: 'Girls Varsity Squash',    home: 'Fieldston',  homeScore: 4,  away: 'Riverdale',   awayScore: 2,  status: 'Match 7', isHome: true,  isLive: false },
+  { sport: 'Boys JV Wrestling',       home: 'Collegiate', homeScore: 27, away: 'Fieldston',   awayScore: 30, status: 'Final',   isHome: false, isLive: false },
+  { sport: 'Girls Varsity Fencing',   home: 'Fieldston',  homeScore: 12, away: 'Dalton',      awayScore: 9,  status: 'Final',   isHome: true,  isLive: false },
+];
+
+const SEASONS = {
+  Fall: [
+    { name: 'Football',      gender: 'Boys',       record: '6–2',         coach: 'Coach T. Abramowitz' },
+    { name: 'Soccer',        gender: 'Boys',       record: '8–3–1',       coach: 'Coach M. Osei'       },
+    { name: 'Soccer',        gender: 'Girls',      record: '10–2',        coach: 'Coach R. Ferreira'   },
+    { name: 'Volleyball',    gender: 'Girls',      record: '21–0', champion: 'NYSAIS Champions', coach: 'Coach D. Park' },
+    { name: 'Field Hockey',  gender: 'Girls',      record: '7–4',         coach: 'Coach S. Lindqvist'  },
+    { name: 'Cross Country', gender: 'Boys/Girls', record: '5th Ivy Prep',coach: 'Coach J. Alvarez'    },
+  ],
+  Winter: [
+    { name: 'Basketball',   gender: 'Boys',       record: '9–4',         coach: 'Coach W. Barnes'  },
+    { name: 'Basketball',   gender: 'Girls',      record: '7–6',         coach: 'Coach N. Okonkwo' },
+    { name: 'Swimming',     gender: 'Boys/Girls', record: '6–2',         coach: 'Coach C. Huang'   },
+    { name: 'Wrestling',    gender: 'Boys',       record: '11–3',        coach: 'Coach P. Reyes'   },
+    { name: 'Squash',       gender: 'Boys',       record: '8–1',         coach: 'Coach A. Mehta'   },
+    { name: 'Squash',       gender: 'Girls',      record: '9–0',         coach: 'Coach A. Mehta'   },
+    { name: 'Fencing',      gender: 'Boys/Girls', record: '14–2',        coach: 'Coach I. Volkov'  },
+    { name: 'Indoor Track', gender: 'Boys/Girls', record: '4th Ivy Prep',coach: 'Coach L. Dupont'  },
+  ],
+  Spring: [
+    { name: 'Baseball',      gender: 'Boys',       record: '8–5',         coach: 'Coach R. Castellano' },
+    { name: 'Softball',      gender: 'Girls',      record: '6–6',         coach: 'Coach T. Watts'      },
+    { name: 'Lacrosse',      gender: 'Boys',       record: '9–3',         coach: 'Coach B. Finley'     },
+    { name: 'Lacrosse',      gender: 'Girls',      record: '11–2',        coach: 'Coach K. Sullivan'   },
+    { name: 'Tennis',        gender: 'Boys',       record: '7–2',         coach: 'Coach O. Brennan'    },
+    { name: 'Tennis',        gender: 'Girls',      record: '8–1',         coach: 'Coach O. Brennan'    },
+    { name: 'Outdoor Track', gender: 'Boys/Girls', record: '3rd Ivy Prep',coach: 'Coach L. Dupont'     },
+    { name: 'Golf',          gender: 'Boys',       record: '4–3',         coach: 'Coach F. Weston'     },
+  ],
+};
+
+const SCHEDULE = [
+  { date: 'Wed Apr 16', time: '6:00 PM',  sport: 'Boys Varsity Basketball', opponent: 'Horace Mann', location: 'Home', context: 'Ivy Prep Semifinal' },
+  { date: 'Thu Apr 17', time: '4:30 PM',  sport: 'Girls Varsity Lacrosse',  opponent: 'Poly Prep',   location: 'Away', context: 'Ivy Prep League'   },
+  { date: 'Sat Apr 19', time: '11:00 AM', sport: 'Boys Varsity Baseball',   opponent: 'Hackley',     location: 'Home', context: 'Non-League'        },
+  { date: 'Sat Apr 19', time: '1:00 PM',  sport: 'Girls Varsity Tennis',    opponent: 'Trinity',     location: 'Away', context: 'Ivy Prep League'   },
+  { date: 'Mon Apr 21', time: '4:00 PM',  sport: 'Boys Varsity Lacrosse',   opponent: 'Collegiate',  location: 'Home', context: 'Ivy Prep League'   },
+];
+
+const CHAMPIONSHIPS = [
+  { year: '2023', title: 'NYSAIS Volleyball Champions',   detail: 'Girls Varsity · Undefeated 21–0 · State Champions' },
+  { year: '2022', title: 'Ivy Prep League Squash',        detail: 'Girls Varsity · Third consecutive title'           },
+  { year: '2021', title: 'Ivy Prep League Fencing',       detail: 'Co-ed · Dominant 14–1 season'                     },
+  { year: '2020', title: 'Ivy Prep League Cross Country', detail: 'Girls Varsity · Conference Champions'              },
+  { year: '2019', title: 'NYSAIS Swimming',               detail: 'Boys Varsity · State Championship'                 },
+];
+
+/* ─── EAGLE MARK SVG ───────────────────────────────────── */
+
+function EagleMark({ size = 40, className = '' }) {
+  return (
+    <svg
+      width={size}
+      height={Math.round(size * 62 / 56)}
+      viewBox="0 0 56 62"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      aria-label="Fieldston Eagles shield"
+    >
+      {/* Shield body */}
+      <path
+        d="M28 1.5L53.5 9.5V32C53.5 46 28 60.5 28 60.5C28 60.5 2.5 46 2.5 32V9.5L28 1.5Z"
+        fill="#0A1F3D"
+      />
+      {/* Shield border */}
+      <path
+        d="M28 1.5L53.5 9.5V32C53.5 46 28 60.5 28 60.5C28 60.5 2.5 46 2.5 32V9.5L28 1.5Z"
+        stroke="#E87722"
+        strokeWidth="1.8"
+        fill="none"
+      />
+
+      {/* ── Left wing (two feather tiers) ── */}
+      <path d="M24 23 C20 19 13 16 6 19 C10 18 16 20 24 27 Z" fill="white" />
+      <path d="M24 27 C17 25 10 25 6 29 C10 27 17 27 24 31 Z" fill="white" fillOpacity="0.75" />
+
+      {/* ── Right wing (mirror) ── */}
+      <path d="M32 23 C36 19 43 16 50 19 C46 18 40 20 32 27 Z" fill="white" />
+      <path d="M32 27 C39 25 46 25 50 29 C46 27 39 27 32 31 Z" fill="white" fillOpacity="0.75" />
+
+      {/* ── Body ── */}
+      <ellipse cx="28" cy="33" rx="3.5" ry="7" fill="white" />
+
+      {/* ── Head ── */}
+      <circle cx="28" cy="20" r="5" fill="white" />
+
+      {/* ── Beak (right-pointing hook) ── */}
+      <path d="M31 18.5 L37 20.5 L31 22.5 L32 21 Z" fill="#E87722" />
+
+      {/* ── Tail (three-feather fan) ── */}
+      <path d="M22 40 L20 47 L24 43 L28 48 L32 43 L36 47 L34 40 Z" fill="white" fillOpacity="0.85" />
+
+      {/* ── Eye ── */}
+      <circle cx="30" cy="19.5" r="2"   fill="#E87722" />
+      <circle cx="30" cy="19.5" r="0.9" fill="#0A1F3D" />
+    </svg>
+  );
+}
+
+/* ─── NAV ──────────────────────────────────────────────── */
+
+function NavBar() {
+  const [condensed,  setCondensed]  = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => {
+      setCondensed(window.scrollY > 60);
+      if (window.scrollY > 60) setMobileOpen(false);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const navLinks = [
+    { href: '#teams',         label: 'Teams'         },
+    { href: '#schedule',      label: 'Schedule'      },
+    { href: '#championships', label: 'Championships' },
+  ];
+
+  return (
+    <nav
+      className="bg-navy text-white sticky top-0 z-50 border-b-2 border-orange"
+      style={{
+        boxShadow: condensed ? '0 4px 28px rgba(6,15,30,0.55)' : 'none',
+        transition: 'box-shadow 0.3s ease',
+      }}
+    >
+      <div
+        className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between"
+        style={{
+          paddingTop:    condensed ? '7px'  : '11px',
+          paddingBottom: condensed ? '7px'  : '11px',
+          transition: 'padding 0.3s ease',
+        }}
+      >
+        {/* Logo */}
+        <a href="#" className="flex items-center gap-3 no-underline">
+          <div style={{ transition: 'all 0.3s ease', width: condensed ? 30 : 38 }}>
+            <EagleMark size={condensed ? 30 : 38} />
+          </div>
+          <div>
+            <div
+              className="font-serif font-bold leading-tight tracking-wide text-white"
+              style={{ fontSize: condensed ? '13px' : '17px', transition: 'font-size 0.3s ease' }}
+            >
+              FIELDSTON EAGLES
+            </div>
+            {!condensed && (
+              <div className="text-orange text-xs font-semibold tracking-widest uppercase" style={{ letterSpacing: '0.18em' }}>
+                Athletics
+              </div>
+            )}
+          </div>
+        </a>
+
+        {/* Desktop links */}
+        <div className="hidden md:flex items-center gap-8">
+          {navLinks.map(l => (
+            <a
+              key={l.href}
+              href={l.href}
+              className="text-sm font-medium tracking-wide text-white/80 hover:text-orange transition-colors duration-200"
+            >
+              {l.label}
+            </a>
+          ))}
+          <span className="text-xs text-white/30 font-medium">Ivy Preparatory School League</span>
+        </div>
+
+        {/* Mobile hamburger */}
+        <button
+          className="md:hidden flex flex-col gap-1.5 p-2 rounded"
+          onClick={() => setMobileOpen(o => !o)}
+          aria-label="Toggle menu"
+          style={{ background: 'none', border: 'none', cursor: 'pointer', transition: 'transform 0.1s ease' }}
+        >
+          <span className={`block w-6 h-0.5 bg-white transition-all duration-200 ${mobileOpen ? 'rotate-45 translate-y-2' : ''}`} />
+          <span className={`block w-6 h-0.5 bg-white transition-all duration-200 ${mobileOpen ? 'opacity-0' : ''}`} />
+          <span className={`block w-6 h-0.5 bg-white transition-all duration-200 ${mobileOpen ? '-rotate-45 -translate-y-2' : ''}`} />
+        </button>
+      </div>
+
+      {/* Mobile dropdown */}
+      {mobileOpen && (
+        <div
+          className="md:hidden bg-navy-light border-t border-white/10 px-6 pb-4"
+          style={{ overflow: 'hidden' }}
+        >
+          <div className="pt-4 flex flex-col gap-4">
+            {navLinks.map(l => (
+              <a
+                key={l.href}
+                href={l.href}
+                className="text-sm font-semibold tracking-wide text-white/80 hover:text-orange transition-colors"
+                onClick={() => setMobileOpen(false)}
+              >
+                {l.label}
+              </a>
+            ))}
+            <div className="text-xs text-white/30 mt-1">Ivy Preparatory School League</div>
+          </div>
+        </div>
+      )}
+    </nav>
+  );
+}
+
+/* ─── SCOREBOARD ────────────────────────────────────────── */
+
+function AnimatedScore({ target, leading }) {
+  const [display, ref] = useCountUp(target, [target]);
+
+  return (
+    <span
+      ref={ref}
+      className={`font-bold text-sm sm:text-base tabular-nums transition-colors ${leading ? 'text-orange' : 'text-gray-300'}`}
+    >
+      {display}
+    </span>
+  );
+}
+
+function ScoreboardStrip() {
+  return (
+    <div className="bg-navy-dark border-b border-navy-light py-2 overflow-x-auto scrollbar-hide">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="flex divide-x divide-navy-light" style={{ minWidth: 'max-content' }}>
+          {LIVE_SCORES.map((game, i) => {
+            const fldScore = game.isHome ? game.homeScore : game.awayScore;
+            const oppScore = game.isHome ? game.awayScore : game.homeScore;
+            const oppName  = game.isHome ? game.away      : game.home;
+            const fldLeads = fldScore > oppScore;
+            const isFinal  = game.status === 'Final';
+            return (
+              <div key={i} className="px-4 sm:px-5 py-1.5 text-white flex items-center gap-2.5">
+                <div>
+                  {/* Sport label + live badge */}
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    {game.isLive && (
+                      <span className="live-dot inline-block w-1.5 h-1.5 rounded-full bg-orange flex-shrink-0" />
+                    )}
+                    <span className="text-gray-400 text-xs font-medium uppercase tracking-wider leading-none">
+                      {game.sport}
+                    </span>
+                  </div>
+                  {/* Score line */}
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-gray-500 text-xs">FLD</span>
+                    <AnimatedScore target={fldScore} leading={fldLeads}  />
+                    <span className="text-gray-600 text-xs">–</span>
+                    <AnimatedScore target={oppScore} leading={!fldLeads} />
+                    <span className="text-gray-500 text-xs">{oppName.split(' ')[0]}</span>
+                  </div>
+                </div>
+                <span
+                  className={`text-xs px-2 py-0.5 rounded font-semibold tracking-wide whitespace-nowrap flex-shrink-0 ${
+                    isFinal ? 'bg-white/10 text-gray-400' : 'bg-orange text-white'
+                  }`}
+                >
+                  {game.status}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── HERO ──────────────────────────────────────────────── */
+
+function Hero() {
+  return (
+    <section className="bg-navy text-white relative overflow-hidden">
+
+      {/* ── Animated gradient layers ── */}
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          top: '-15%', right: '-8%',
+          width: '55%', height: '85%',
+          background: 'radial-gradient(ellipse at center, #E87722 0%, transparent 68%)',
+          animation: 'glowDrift1 15s ease-in-out infinite',
+        }}
+      />
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          bottom: '-20%', left: '-5%',
+          width: '48%', height: '70%',
+          background: 'radial-gradient(ellipse at center, #1a3a6e 0%, transparent 70%)',
+          animation: 'glowDrift2 19s ease-in-out infinite',
+        }}
+      />
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          top: '30%', left: '30%',
+          width: '40%', height: '40%',
+          background: 'radial-gradient(ellipse at center, #16335e 0%, transparent 70%)',
+          animation: 'glowDrift3 22s ease-in-out infinite',
+        }}
+      />
+      {/* Fine grid texture */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: 'repeating-linear-gradient(45deg, rgba(255,255,255,0.025) 0, rgba(255,255,255,0.025) 1px, transparent 0, transparent 50%)',
+          backgroundSize: '22px 22px',
+        }}
+      />
+      {/* Watermark eagle */}
+      <div
+        className="absolute pointer-events-none hidden sm:block"
+        style={{ top: '10%', right: '-2%', opacity: 0.04 }}
+      >
+        <EagleMark size={340} />
+      </div>
+
+      {/* ── Content ── */}
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-20 md:py-28">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-10 md:gap-8">
+
+          {/* Left copy */}
+          <div className="max-w-xl">
+            <div className="flex items-center gap-2 mb-5 fade-up fade-up-1">
+              <span className="w-8 h-px bg-orange inline-block" />
+              <span
+                className="text-orange text-xs font-semibold uppercase"
+                style={{ letterSpacing: '0.16em' }}
+              >
+                Ethical Culture Fieldston School
+              </span>
+            </div>
+
+            <h1
+              className="font-serif font-black leading-none tracking-tight mb-5 fade-up fade-up-2"
+              style={{ fontSize: 'clamp(2.8rem, 8vw, 5.5rem)', lineHeight: '0.95' }}
+            >
+              Fieldston<br />
+              <em className="text-orange not-italic">Eagles</em><br />
+              Athletics
+            </h1>
+
+            <p
+              className="text-gray-300 font-light leading-7 max-w-sm mb-5 fade-up fade-up-3"
+              style={{ fontSize: 'clamp(0.95rem, 2vw, 1.1rem)' }}
+            >
+              147 years of academic excellence. Decades of athletic distinction.
+              One school. One standard.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-x-1 gap-y-1 text-sm text-gray-400 fade-up fade-up-4">
+              <span className="text-orange font-semibold">Ivy Preparatory School League</span>
+              <span className="divider-diamond" />
+              <span>The Bronx, New York City</span>
+            </div>
+          </div>
+
+          {/* Tonight's game card */}
+          <div
+            className="w-full md:w-auto md:min-w-72 bg-white/5 border border-white/12 rounded-2xl p-6 md:p-7 backdrop-blur-sm flex-shrink-0 fade-up fade-up-3"
+          >
+            <div className="flex items-center gap-2 mb-4">
+              <span className="live-dot w-2 h-2 rounded-full bg-orange flex-shrink-0" />
+              <span className="text-orange text-xs font-bold uppercase" style={{ letterSpacing: '0.14em' }}>
+                Tonight's Game
+              </span>
+            </div>
+
+            <div className="font-serif text-lg font-bold mb-0.5 leading-snug">Boys Varsity Basketball</div>
+            <div className="text-gray-400 text-sm mb-5 font-medium">Ivy Prep Semifinal</div>
+
+            <div className="flex items-center gap-5 mb-6">
+              <div className="text-center">
+                <div className="font-serif text-2xl font-black text-orange leading-none">FLD</div>
+                <div className="text-xs text-gray-500 mt-1 tracking-wide">Eagles</div>
+              </div>
+              <div className="flex-1 flex items-center gap-2">
+                <div className="flex-1 h-px bg-white/10" />
+                <span className="text-gray-600 text-sm font-semibold">vs.</span>
+                <div className="flex-1 h-px bg-white/10" />
+              </div>
+              <div className="text-center">
+                <div className="font-serif text-2xl font-black leading-none">HM</div>
+                <div className="text-xs text-gray-500 mt-1 tracking-wide">Horace Mann</div>
+              </div>
+            </div>
+
+            <div className="border-t border-white/10 pt-4 space-y-2 text-sm">
+              {[
+                ['Time',     '6:00 PM'],
+                ['Location', 'Fieldston Gymnasium'],
+                ['Date',     'Wednesday, Apr 16'],
+              ].map(([label, val]) => (
+                <div key={label} className="flex justify-between items-center">
+                  <span className="text-gray-500">{label}</span>
+                  <span className="font-semibold text-white">{val}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── TEAMS ─────────────────────────────────────────────── */
+
+const SPORT_ICONS = {
+  Football: '🏈', Soccer: '⚽', Volleyball: '🏐', 'Field Hockey': '🏑',
+  'Cross Country': '🏃', Basketball: '🏀', Swimming: '🏊', Wrestling: '🤼',
+  Squash: '🎾', Fencing: '🤺', 'Indoor Track': '🏃', Baseball: '⚾',
+  Softball: '🥎', Lacrosse: '🥍', Tennis: '🎾', 'Outdoor Track': '🏃', Golf: '⛳',
+};
+
+const SEASON_COLORS = {
+  Fall:   { bg: 'bg-amber-900/10',   border: 'border-amber-700/30',   badge: 'bg-amber-800/80 text-amber-100',    dot: 'bg-amber-500'    },
+  Winter: { bg: 'bg-blue-900/10',    border: 'border-blue-700/30',    badge: 'bg-blue-800/80 text-blue-100',      dot: 'bg-blue-400'     },
+  Spring: { bg: 'bg-emerald-900/10', border: 'border-emerald-700/30', badge: 'bg-emerald-800/80 text-emerald-100',dot: 'bg-emerald-400'  },
+};
+
+function TeamCard({ team, season }) {
+  const colors     = SEASON_COLORS[season];
+  const isChampion = !!team.champion;
+
+  return (
+    <div
+      className={`team-card ${isChampion ? 'team-card-champ' : ''} rounded-xl border ${colors.border} ${colors.bg} p-4 relative overflow-hidden cursor-default select-none`}
+    >
+      {isChampion && (
+        <div className="absolute top-0 right-0 bg-orange text-white text-xs font-bold px-2 py-0.5 rounded-bl-lg" style={{ letterSpacing: '0.04em' }}>
+          ★ CHAMP
+        </div>
+      )}
+      <div className="flex items-start justify-between mb-2.5">
+        <span className="text-xl">{SPORT_ICONS[team.name] || '🏅'}</span>
+        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${colors.badge}`}>{team.gender}</span>
+      </div>
+      <div className="font-serif font-bold text-navy text-sm leading-tight mb-0.5">
+        {team.gender === 'Boys/Girls' ? '' : team.gender + ' '}{team.name}
+      </div>
+      <div className="text-xs text-gray-400 mb-2 leading-snug">{team.coach}</div>
+      <div className={`font-bold text-sm ${isChampion ? 'text-orange' : 'text-navy'}`}>{team.record}</div>
+      {isChampion && <div className="mt-1 text-xs text-orange font-semibold leading-snug">{team.champion}</div>}
+    </div>
+  );
+}
+
+function TeamsSection() {
+  const [activeSeason, setActiveSeason] = useState('All');
+  const seasons = ['All', 'Fall', 'Winter', 'Spring'];
+
+  return (
+    <section id="teams" className="py-14 sm:py-16 max-w-7xl mx-auto px-4 sm:px-6">
+      {/* Header */}
+      <div className="mb-10">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="w-6 h-px bg-orange inline-block" />
+          <span className="text-orange text-xs font-semibold uppercase" style={{ letterSpacing: '0.15em' }}>Programs</span>
+        </div>
+        <h2 className="font-serif text-3xl sm:text-4xl font-bold text-navy mb-5" style={{ lineHeight: '1.1' }}>
+          Varsity Teams
+        </h2>
+        {/* Filter pills */}
+        <div className="flex flex-wrap gap-2">
+          {seasons.map(s => (
+            <button
+              key={s}
+              onClick={() => setActiveSeason(s)}
+              className={`px-4 py-1.5 text-sm font-semibold rounded-full border transition-colors duration-150 ${
+                activeSeason === s
+                  ? 'bg-navy text-white border-navy shadow-sm'
+                  : 'bg-white text-navy border-gray-300 hover:border-navy'
+              }`}
+              style={{ cursor: 'pointer' }}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Season grids */}
+      {(activeSeason === 'All' ? ['Fall', 'Winter', 'Spring'] : [activeSeason]).map(season => (
+        <div key={season} className="mb-12">
+          <div className="flex items-center gap-3 mb-5">
+            <span className={`w-2.5 h-2.5 rounded-full ${SEASON_COLORS[season].dot}`} />
+            <h3 className="font-serif text-xl sm:text-2xl font-bold text-navy">{season} Sports</h3>
+            <div className="flex-1 h-px bg-gray-200 ml-1" />
+            <span className="text-xs text-gray-400 tabular-nums">{SEASONS[season].length} programs</span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+            {SEASONS[season].map((team, i) => (
+              <TeamCard key={`${season}-${i}`} team={team} season={season} index={i} />
+            ))}
+          </div>
+        </div>
+      ))}
+    </section>
+  );
+}
+
+/* ─── SCHEDULE ──────────────────────────────────────────── */
+
+function ScheduleSection() {
+  return (
+    <section id="schedule" className="py-14 sm:py-16 bg-navy">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        {/* Header */}
+        <div className="mb-10">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="w-6 h-px bg-orange inline-block" />
+            <span className="text-orange text-xs font-semibold uppercase" style={{ letterSpacing: '0.15em' }}>Calendar</span>
+          </div>
+          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white" style={{ lineHeight: '1.1' }}>
+            Upcoming Games
+          </h2>
+        </div>
+
+        <div className="space-y-2">
+          {SCHEDULE.map((game, i) => {
+            const isToday = game.date === 'Wed Apr 16';
+            return (
+              <div
+                key={i}
+                className={`rounded-xl border px-4 sm:px-6 py-4 sm:py-5 ${
+                  isToday
+                    ? 'bg-orange/10 border-orange/35'
+                    : 'bg-white/5 border-white/8'
+                }`}
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+                  {/* Date + game info */}
+                  <div className="flex items-center gap-4 sm:gap-5 flex-1 min-w-0">
+                    {/* Date block */}
+                    <div className="text-center flex-shrink-0 w-12 sm:w-14">
+                      <div className={`text-xs font-bold uppercase tracking-wide ${isToday ? 'text-orange' : 'text-gray-500'}`}>
+                        {game.date.split(' ')[0]}
+                      </div>
+                      <div className="font-serif text-2xl sm:text-3xl font-black text-white leading-none">
+                        {game.date.split(' ')[2]}
+                      </div>
+                      <div className={`text-xs ${isToday ? 'text-orange' : 'text-gray-600'}`}>
+                        {game.date.split(' ')[1]}
+                      </div>
+                    </div>
+
+                    <div className="w-px h-9 bg-white/10 hidden sm:block flex-shrink-0" />
+
+                    {/* Game details */}
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-0.5">
+                        {isToday && (
+                          <span className="bg-orange text-white text-xs font-bold px-2 py-0.5 rounded-sm tracking-wider uppercase">
+                            Today
+                          </span>
+                        )}
+                        <span className="text-gray-500 text-xs font-medium uppercase tracking-wider">{game.context}</span>
+                      </div>
+                      <div className="font-serif text-base sm:text-lg font-bold text-white leading-snug truncate">
+                        {game.sport}
+                      </div>
+                      <div className="text-gray-400 text-sm">
+                        vs. <span className="font-semibold text-gray-200">{game.opponent}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Time + location */}
+                  <div className="flex items-center gap-4 sm:gap-6 pl-16 sm:pl-0 flex-shrink-0">
+                    <div>
+                      <div className="text-gray-500 text-xs uppercase tracking-wider mb-0.5">Time</div>
+                      <div className="font-semibold text-white text-sm">{game.time}</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-500 text-xs uppercase tracking-wider mb-0.5">Location</div>
+                      <div className={`font-semibold text-sm ${game.location === 'Home' ? 'text-orange' : 'text-white'}`}>
+                        {game.location}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── CHAMPIONSHIPS ─────────────────────────────────────── */
+
+function ChampionshipsBanner() {
+  return (
+    <section id="championships" className="py-14 sm:py-16 bg-cream">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        {/* Header row */}
+        <div className="mb-10">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="w-6 h-px bg-orange inline-block" />
+            <span className="text-orange text-xs font-semibold uppercase" style={{ letterSpacing: '0.15em' }}>Excellence</span>
+          </div>
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-navy" style={{ lineHeight: '1.1' }}>
+              Championships
+            </h2>
+            <div className="bg-navy text-white rounded-xl px-6 sm:px-8 py-4 text-center self-start sm:self-auto">
+              <div className="font-serif text-4xl sm:text-5xl font-black text-orange leading-none">65</div>
+              <div className="text-xs sm:text-sm font-semibold mt-1 tracking-wide">Ivy Prep League Titles</div>
+              <div className="text-gray-500 text-xs mt-0.5">Since 2000</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Hero championship card */}
+        <div className="bg-navy rounded-2xl p-6 sm:p-10 md:p-12 mb-5 relative overflow-hidden">
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{ background: 'radial-gradient(circle at 80% 50%, rgba(232,119,34,0.14) 0%, transparent 60%)' }}
+          />
+          <div className="relative flex flex-col sm:flex-row items-start sm:items-center gap-5 sm:gap-8">
+            <div className="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 bg-orange rounded-full flex items-center justify-center">
+              <span className="text-3xl sm:text-4xl">🏆</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-orange text-xs font-bold uppercase mb-1.5" style={{ letterSpacing: '0.14em' }}>
+                2023 · State Championship
+              </div>
+              <h3 className="font-serif text-2xl sm:text-3xl md:text-4xl font-black text-white leading-tight mb-3">
+                NYSAIS Volleyball<br />Champions
+              </h3>
+              <p className="text-gray-300 text-sm sm:text-base leading-7 max-w-lg">
+                The Girls Varsity Volleyball team completed a historic undefeated season —{' '}
+                <strong className="text-white font-semibold">21 wins, 0 losses</strong> — claiming the New York
+                State Association of Independent Schools championship. The finest season in program history.
+              </p>
+            </div>
+            <div className="hidden md:block flex-shrink-0">
+              <div className="font-serif text-6xl lg:text-7xl font-black text-orange/15 leading-none select-none">
+                21–0
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Secondary championships grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          {CHAMPIONSHIPS.slice(1).map((c, i) => (
+            <div
+              key={i}
+              className="champ-card bg-white border border-cream-dark rounded-xl p-5"
+            >
+              <div className="font-serif text-2xl sm:text-3xl font-black text-orange/25 leading-none mb-2">{c.year}</div>
+              <div className="font-serif text-sm sm:text-base font-bold text-navy mb-1 leading-snug">{c.title}</div>
+              <div className="text-xs text-gray-400 leading-relaxed">{c.detail}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── STATS BAR ─────────────────────────────────────────── */
+
+function StatNumber({ stat, index }) {
+  const [display, ref] = useCountUp(stat.value, [stat.value, index]);
+
+  return (
+    <div ref={ref} className="text-center">
+      <div className="font-serif text-3xl sm:text-4xl font-black text-white leading-none">
+        {display}{stat.suffix || ''}
+      </div>
+      <div className="text-white/70 text-xs sm:text-sm font-medium mt-2 leading-snug">{stat.label}</div>
+    </div>
+  );
+}
+
+function StatsBar() {
+  const stats = [
+    { label: 'Varsity Programs',         value: 22,  suffix: ''   },
+    { label: 'Student Athletes',          value: 400, suffix: '+'  },
+    { label: 'League Titles Since 2000',  value: 65,  suffix: ''   },
+    { label: 'Years of Athletics',        value: 80,  suffix: '+'  },
+  ];
+  return (
+    <div className="bg-orange">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
+          {stats.map((s, i) => <StatNumber key={i} stat={s} index={i} />)}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── FOOTER ─────────────────────────────────────────────── */
+
+function Footer() {
+  return (
+    <footer className="bg-navy-dark text-white pt-12 sm:pt-16 pb-8 border-t border-white/8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="flex flex-col md:flex-row justify-between items-start gap-10 mb-10">
+          {/* Brand */}
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <EagleMark size={44} />
+              <div>
+                <div className="font-serif font-bold text-base tracking-wide">FIELDSTON EAGLES</div>
+                <div className="text-orange text-xs font-semibold mt-0.5" style={{ letterSpacing: '0.18em' }}>ATHLETICS</div>
+              </div>
+            </div>
+            <p className="text-gray-500 text-sm leading-7 max-w-xs">
+              Ethical Culture Fieldston School<br />
+              The Bronx, New York City<br />
+              Member: Ivy Preparatory School League
+            </p>
+          </div>
+
+          {/* Links */}
+          <div className="grid grid-cols-2 gap-x-12 sm:gap-x-16 gap-y-2 text-sm text-gray-500">
+            <div>
+              <div className="text-white/60 font-semibold mb-3 text-xs uppercase" style={{ letterSpacing: '0.12em' }}>
+                Rivals
+              </div>
+              {['Horace Mann', 'Riverdale Country', 'Dalton', 'Trinity'].map(r => (
+                <div key={r} className="py-0.5 hover:text-orange transition-colors duration-150 cursor-pointer">{r}</div>
+              ))}
+            </div>
+            <div>
+              <div className="text-white/60 font-semibold mb-3 text-xs uppercase" style={{ letterSpacing: '0.12em' }}>
+                League
+              </div>
+              {['Collegiate', 'Poly Prep', 'Hackley', 'Horace Mann'].map(r => (
+                <div key={r} className="py-0.5 hover:text-orange transition-colors duration-150 cursor-pointer">{r}</div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="border-t border-white/8 pt-6 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-gray-600">
+          <span>© 2024 Ethical Culture Fieldston School Athletics. All rights reserved.</span>
+          <span className="text-orange font-semibold tracking-wide">Go Eagles.</span>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+/* ─── APP ───────────────────────────────────────────────── */
+
+function App() {
+  return (
+    <div className="min-h-screen">
+      <NavBar />
+      <ScoreboardStrip />
+      <Hero />
+      <TeamsSection />
+      <ScheduleSection />
+      <ChampionshipsBanner />
+      <StatsBar />
+      <Footer />
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

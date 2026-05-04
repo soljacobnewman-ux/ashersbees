@@ -1,0 +1,566 @@
+---
+import '../styles/design-system.css';
+import '../styles/animations.css';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  ogImage?: string;
+}
+
+const { title, description, ogImage = '/og-default.jpg' } = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const ogImageURL   = new URL(ogImage, Astro.site);
+
+const path = Astro.url.pathname;
+const isActive = (href: string) =>
+  href === '/' ? path === '/' : path.startsWith(href);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="canonical" href={canonicalURL} />
+
+    <title>{title}</title>
+    <meta name="title"       content={title} />
+    <meta name="description" content={description} />
+    <meta property="og:type"        content="website" />
+    <meta property="og:url"         content={canonicalURL} />
+    <meta property="og:site_name"   content="Asher's Bees" />
+    <meta property="og:title"       content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image"       content={ogImageURL} />
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:url"         content={canonicalURL} />
+    <meta name="twitter:title"       content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image"       content={ogImageURL} />
+
+    <!-- Cormorant Garamond · DM Sans · Plus Jakarta Sans (logo) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,400&family=Plus+Jakarta+Sans:wght@700&display=swap"
+    />
+  </head>
+
+  <body>
+
+    <!-- =====================================================================
+         HEADER
+         ===================================================================== -->
+    <header id="site-header" class="site-header" role="banner">
+      <div class="header-inner">
+
+        <!-- Logo: illustrated bee + ASHER'S BEES · .NYC -->
+        <a href="/" class="logo" aria-label="Asher's Bees — home">
+
+          <!--
+            Organic bee illustration — top-down view.
+            Wings: emerald green with vein details.
+            Abdomen: gold with black stripes.
+            Head: black with gold compound eyes.
+            Antennae: black stems with gold tips.
+            Legs: six jointed limbs.
+          -->
+          <svg
+            class="logo-bee"
+            width="30"
+            height="37"
+            viewBox="0 0 38 48"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <!-- Upper left wing -->
+            <path d="M17 19 C 9 11 -1 13 0 22 C 1 29 10 28 17 25"
+                  fill="#006C32" fill-opacity="0.88" stroke="#004D25" stroke-width="0.5"/>
+            <path d="M16 21 C 9 16 3 17 1 21" stroke="#004D25" stroke-width="0.35" fill="none" opacity="0.7"/>
+            <path d="M14 24 C 8 23 4 24 2 27" stroke="#004D25" stroke-width="0.3" fill="none" opacity="0.6"/>
+
+            <!-- Lower left wing -->
+            <path d="M16 25 C 9 22 3 26 4 32 C 6 37 14 34 16 29"
+                  fill="#006C32" fill-opacity="0.68" stroke="#004D25" stroke-width="0.4"/>
+            <path d="M14 27 C 8 26 5 28 5 32" stroke="#004D25" stroke-width="0.3" fill="none" opacity="0.6"/>
+
+            <!-- Upper right wing -->
+            <path d="M21 19 C 29 11 39 13 38 22 C 37 29 28 28 21 25"
+                  fill="#006C32" fill-opacity="0.88" stroke="#004D25" stroke-width="0.5"/>
+            <path d="M22 21 C 29 16 35 17 37 21" stroke="#004D25" stroke-width="0.35" fill="none" opacity="0.7"/>
+            <path d="M24 24 C 30 23 34 24 36 27" stroke="#004D25" stroke-width="0.3" fill="none" opacity="0.6"/>
+
+            <!-- Lower right wing -->
+            <path d="M22 25 C 29 22 35 26 34 32 C 32 37 24 34 22 29"
+                  fill="#006C32" fill-opacity="0.68" stroke="#004D25" stroke-width="0.4"/>
+            <path d="M24 27 C 30 26 33 28 33 32" stroke="#004D25" stroke-width="0.3" fill="none" opacity="0.6"/>
+
+            <!-- Legs — three per side with jointed bend -->
+            <path d="M14 20 L 8 15 L 5 18" stroke="#111" stroke-width="0.9" stroke-linecap="round" fill="none"/>
+            <path d="M24 20 L 30 15 L 33 18" stroke="#111" stroke-width="0.9" stroke-linecap="round" fill="none"/>
+            <path d="M13 23 L 6 22 L 3 27" stroke="#111" stroke-width="0.9" stroke-linecap="round" fill="none"/>
+            <path d="M25 23 L 32 22 L 35 27" stroke="#111" stroke-width="0.9" stroke-linecap="round" fill="none"/>
+            <path d="M14 27 L 7 30 L 4 36" stroke="#111" stroke-width="0.9" stroke-linecap="round" fill="none"/>
+            <path d="M24 27 L 31 30 L 34 36" stroke="#111" stroke-width="0.9" stroke-linecap="round" fill="none"/>
+
+            <!-- Abdomen — gold, tapered, black stripe bands -->
+            <path d="M13 27 C 11 34 12 41 19 47 C 26 41 27 34 25 27 Q 19 25 13 27 Z"
+                  fill="#D4A030"/>
+            <path d="M12.5 31 Q 19 29 25.5 31"
+                  stroke="#0A0A0A" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+            <path d="M12 36 Q 19 34 26 36"
+                  stroke="#0A0A0A" stroke-width="2.1" stroke-linecap="round" fill="none"/>
+            <path d="M13 41 Q 19 39.5 25 41"
+                  stroke="#0A0A0A" stroke-width="1.7" stroke-linecap="round" fill="none"/>
+            <!-- Abdomen sheen -->
+            <path d="M13 27 C 11 34 12 41 19 47 C 26 41 27 34 25 27 Q 19 25 13 27 Z"
+                  fill="none" stroke="#B8860B" stroke-width="0.6"/>
+            <path d="M15 28 Q 19 26.5 23 28" stroke="rgba(255,220,100,0.2)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+
+            <!-- Thorax — dark, sits over wing roots -->
+            <ellipse cx="19" cy="22" rx="6.5" ry="5.5" fill="#1A1A1A"/>
+            <ellipse cx="19" cy="22" rx="6.5" ry="5.5" fill="none" stroke="#2E2E2E" stroke-width="0.5"/>
+            <ellipse cx="18" cy="19.5" rx="2.5" ry="1.8" fill="rgba(255,255,255,0.05)"/>
+
+            <!-- Head — black, on top of thorax -->
+            <circle cx="19" cy="12" r="5.5" fill="#0A0A0A"/>
+            <circle cx="19" cy="12" r="5.5" fill="none" stroke="#222" stroke-width="0.5"/>
+
+            <!-- Compound eyes — gold -->
+            <ellipse cx="15.8" cy="11.2" rx="1.9" ry="2.2" fill="#D4A030"/>
+            <ellipse cx="22.2" cy="11.2" rx="1.9" ry="2.2" fill="#D4A030"/>
+            <ellipse cx="15.3" cy="10.4" rx="0.55" ry="0.75" fill="rgba(255,255,255,0.45)"/>
+            <ellipse cx="21.7" cy="10.4" rx="0.55" ry="0.75" fill="rgba(255,255,255,0.45)"/>
+
+            <!-- Antennae — curved stems, gold tips -->
+            <path d="M 16 7 Q 11 2 6 4" stroke="#111" stroke-width="0.95" stroke-linecap="round" fill="none"/>
+            <path d="M 22 7 Q 27 2 32 4" stroke="#111" stroke-width="0.95" stroke-linecap="round" fill="none"/>
+            <circle cx="6"  cy="4" r="1.5" fill="#D4A030"/>
+            <circle cx="32" cy="4" r="1.5" fill="#D4A030"/>
+          </svg>
+
+          <!-- Wordmark: ASHER'S BEES + divider + .NYC -->
+          <span class="logo-text-group">
+            <span class="logo-name">ASHER'S BEES</span>
+            <span class="logo-divider" aria-hidden="true"></span>
+            <span class="logo-tld">.NYC</span>
+          </span>
+
+        </a>
+
+        <!-- Desktop nav -->
+        <nav class="desktop-nav" aria-label="Primary navigation">
+          <a href="/"      class:list={['nav-link', { 'is-active': isActive('/') }]}>Home</a>
+          <a href="/blog"  class:list={['nav-link', { 'is-active': isActive('/blog') }]}>Blog</a>
+          <a href="/about" class:list={['nav-link', { 'is-active': isActive('/about') }]}>About</a>
+        </nav>
+
+        <!-- Hamburger -->
+        <button
+          id="menu-toggle"
+          class="hamburger"
+          aria-label="Open menu"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+        >
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
+
+      </div>
+    </header>
+
+    <!-- Full-screen mobile overlay -->
+    <div id="mobile-menu" class="mobile-menu" role="dialog" aria-label="Navigation" aria-modal="true">
+      <button id="menu-close" class="mobile-close" aria-label="Close menu">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M3 3l14 14M17 3L3 17" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <nav class="mobile-nav" aria-label="Mobile navigation">
+        <a href="/"      class:list={['mobile-link', { 'is-active': isActive('/') }]}>Home</a>
+        <a href="/blog"  class:list={['mobile-link', { 'is-active': isActive('/blog') }]}>Blog</a>
+        <a href="/about" class:list={['mobile-link', { 'is-active': isActive('/about') }]}>About</a>
+      </nav>
+      <p class="mobile-menu-footer">Turtle Bay Gardens, Manhattan</p>
+    </div>
+
+
+    <!-- =====================================================================
+         PAGE CONTENT
+         ===================================================================== -->
+    <slot />
+
+
+    <!-- =====================================================================
+         FOOTER
+         ===================================================================== -->
+    <footer class="site-footer" role="contentinfo">
+      <div class="footer-inner">
+        <p class="footer-copy">&copy; 2026 Asher's Bees &middot; Turtle Bay Gardens, Manhattan &middot; <a href="/admin" class="footer-manage">Manage</a></p>
+        <nav class="footer-social" aria-label="Social links">
+          <a href="#" class="social-link" aria-label="Instagram" rel="noopener noreferrer">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" stroke-width="1.5"/>
+              <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="1.5"/>
+              <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor"/>
+            </svg>
+          </a>
+          <a href="#" class="social-link" aria-label="Twitter / X" rel="noopener noreferrer">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.259 5.63 5.905-5.63Z" fill="currentColor"/>
+            </svg>
+          </a>
+          <a href="mailto:hello@ashersbees.nyc" class="social-link" aria-label="Email">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M2 7l10 7 10-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </a>
+        </nav>
+      </div>
+    </footer>
+
+  </body>
+</html>
+
+
+<style>
+
+  /* ─── HEADER ────────────────────────────────────────────────────────────── */
+
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-overlay);
+    width: 100%;
+    background-color: transparent;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+    border-bottom: 1px solid transparent;
+    transition:
+      background-color 560ms var(--ease-out),
+      backdrop-filter  560ms var(--ease-out),
+      border-color     560ms var(--ease-out);
+  }
+
+  .site-header.is-scrolled {
+    background-color: rgba(10, 10, 10, 0.92);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border-bottom-color: rgba(255, 255, 255, 0.05);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: var(--max-width);
+    margin-inline: auto;
+    padding-inline: var(--space-md);
+    height: 64px;
+  }
+
+  /* ── Logo ───────────────────────────────────────────────────────────────── */
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+
+  .logo-bee {
+    flex-shrink: 0;
+    transition: transform 700ms var(--ease-spring);
+  }
+
+  .logo:hover .logo-bee {
+    transform: rotate(-8deg) scale(1.08);
+  }
+
+  .logo-text-group {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .logo-name {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-weight: 700;
+    font-size: 0.8125rem;
+    letter-spacing: 0.09em;
+    color: var(--color-text-on-dark);
+    line-height: 1;
+    transition: opacity 280ms;
+  }
+
+  .logo:hover .logo-name {
+    opacity: 0.8;
+  }
+
+  .logo-divider {
+    display: block;
+    width: 1px;
+    height: 13px;
+    background-color: var(--color-accent);
+    flex-shrink: 0;
+    opacity: 0.7;
+  }
+
+  .logo-tld {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-weight: 700;
+    font-size: 0.6875rem;
+    letter-spacing: 0.06em;
+    color: var(--color-green);
+    line-height: 1;
+  }
+
+  /* ── Desktop nav ────────────────────────────────────────────────────────── */
+
+  .desktop-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+  }
+
+  .nav-link {
+    font-family: var(--font-body);
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-body-regular);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(237, 236, 232, 0.45);
+    text-decoration: none;
+    transition: color 280ms;
+  }
+
+  .nav-link:hover  { color: var(--color-text-on-dark); }
+  .nav-link.is-active { color: var(--color-green); }
+
+  /* ── Hamburger ──────────────────────────────────────────────────────────── */
+
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 6px;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .bar {
+    display: block;
+    height: 1px;
+    background-color: var(--color-text-on-dark);
+    transform-origin: right center;
+    transition: transform 390ms var(--ease-out), width 390ms var(--ease-out), opacity 390ms;
+  }
+
+  .bar:nth-child(1) { width: 22px; }
+  .bar:nth-child(2) { width: 14px; }
+
+  .hamburger[aria-expanded="true"] .bar:nth-child(1) { transform: rotate(-40deg); width: 22px; }
+  .hamburger[aria-expanded="true"] .bar:nth-child(2) { transform: rotate(40deg) translateY(1px); width: 22px; }
+
+  /* ── Mobile overlay ─────────────────────────────────────────────────────── */
+
+  .mobile-menu {
+    position: fixed;
+    inset: 0;
+    z-index: calc(var(--z-overlay) + 1);
+    background-color: var(--color-bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    transition: opacity 420ms var(--ease-out), visibility 420ms step-end;
+  }
+
+  .mobile-menu.is-open {
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
+    transition: opacity 420ms var(--ease-out), visibility 420ms step-start;
+  }
+
+  .mobile-close {
+    position: absolute;
+    top: 20px;
+    right: var(--space-md);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: rgba(237, 236, 232, 0.5);
+    cursor: pointer;
+    transition: color 280ms;
+  }
+
+  .mobile-close:hover { color: var(--color-text-on-dark); }
+
+  .mobile-nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .mobile-link {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-weight: var(--font-weight-heading-regular);
+    font-size: clamp(2.5rem, 8vw, 4rem);
+    letter-spacing: -0.01em;
+    color: rgba(237, 236, 232, 0.35);
+    text-decoration: none;
+    line-height: 1;
+    font-feature-settings: 'liga' 1;
+    transition: color 280ms;
+  }
+
+  .mobile-link:hover  { color: var(--color-text-on-dark); }
+  .mobile-link.is-active { color: var(--color-green); }
+
+  .mobile-menu-footer {
+    position: absolute;
+    bottom: var(--space-md);
+    font-family: var(--font-body);
+    font-size: var(--text-body-xs);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(237, 236, 232, 0.2);
+    margin: 0;
+  }
+
+  /* ─── FOOTER ────────────────────────────────────────────────────────────── */
+
+  .site-footer {
+    border-top: 1px solid rgba(0, 108, 50, 0.2);
+  }
+
+  .footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    max-width: var(--max-width);
+    margin-inline: auto;
+    padding-inline: var(--space-md);
+    padding-block: var(--space-md);
+  }
+
+  .footer-copy {
+    font-family: var(--font-body);
+    font-size: var(--text-body-xs);
+    letter-spacing: 0.06em;
+    color: rgba(237, 236, 232, 0.25);
+    margin: 0;
+  }
+
+  .footer-social {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .social-link {
+    display: flex;
+    color: rgba(237, 236, 232, 0.25);
+    text-decoration: none;
+    transition: color 280ms;
+  }
+
+  .social-link:hover { color: var(--color-accent); }
+
+  .footer-manage {
+    color: inherit;
+    text-decoration: none;
+    opacity: 0.55;
+    transition: opacity 280ms;
+  }
+
+  .footer-manage:hover {
+    opacity: 1;
+  }
+
+  /* ─── RESPONSIVE ────────────────────────────────────────────────────────── */
+
+  @media (max-width: 768px) {
+    .desktop-nav { display: none; }
+    .hamburger   { display: flex; }
+
+    .header-inner {
+      padding-inline: var(--space-sm);
+      height: 58px;
+    }
+
+    .footer-inner {
+      padding-inline: var(--space-sm);
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-sm);
+    }
+  }
+
+  :global(body.menu-open) { overflow: hidden; }
+
+</style>
+
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Header scroll
+  const header = document.getElementById('site-header') as HTMLElement;
+  const syncHeader = () => header.classList.toggle('is-scrolled', window.scrollY > 48);
+  window.addEventListener('scroll', syncHeader, { passive: true });
+  syncHeader();
+
+  // Mobile menu
+  const toggle     = document.getElementById('menu-toggle') as HTMLButtonElement;
+  const closeBtn   = document.getElementById('menu-close')  as HTMLButtonElement;
+  const mobileMenu = document.getElementById('mobile-menu') as HTMLElement;
+
+  const openMenu  = () => { toggle.setAttribute('aria-expanded', 'true');  mobileMenu.classList.add('is-open');    document.body.classList.add('menu-open');    closeBtn.focus(); };
+  const closeMenu = () => { toggle.setAttribute('aria-expanded', 'false'); mobileMenu.classList.remove('is-open'); document.body.classList.remove('menu-open'); toggle.focus(); };
+
+  toggle.addEventListener('click', openMenu);
+  closeBtn.addEventListener('click', closeMenu);
+  mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && mobileMenu.classList.contains('is-open')) closeMenu(); });
+
+  // Scroll-triggered entrance animations
+  document.querySelectorAll<HTMLElement>('.fade-in, .slide-up, .slide-in-left, .slide-in-right').forEach(el => {
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top 88%',
+      once: true,
+      onEnter: () => el.classList.add('is-visible'),
+    });
+  });
+</script>

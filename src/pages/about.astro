@@ -1,0 +1,273 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="About — Asher's Bees"
+  description="About Asher's Bees, an urban beekeeping operation in Turtle Bay Gardens, Manhattan."
+>
+
+  <div class="about-page">
+
+    <header class="page-header">
+      <div class="container">
+        <div class="page-header-inner slide-up">
+          <p class="page-eyebrow text-label">About</p>
+          <h1 class="page-title">Asher's Bees</h1>
+        </div>
+      </div>
+      <div class="page-rule" aria-hidden="true"></div>
+    </header>
+
+
+    <!-- The Beekeeper -->
+    <section class="about-section">
+      <div class="container">
+        <div class="about-grid">
+
+          <div class="about-text slide-up">
+            <span class="about-label text-label">The Beekeeper</span>
+            <h2 class="about-heading">I'm Asher Bernstein</h2>
+            <p class="about-body">I'm sixteen years old, in tenth grade, and I've lived in the same brownstone my whole life — my mother's childhood home, and my grandma's before that. I can't imagine living anywhere else. I started beekeeping because of my dad. He's the kind of guy who procrastinates by being productive, and one day when he was bored in Connecticut, he had this incredible idea to start keeping bees. I wanted in because I love honey, and I wanted to be that one guy who keeps bees. It's the most niche hobby, and bees are incredibly cool.</p>
+          </div>
+
+          <div class="about-photo slide-up" style="transition-delay: 150ms;">
+            <img src="/images/about-asher.jpeg" alt="Asher, the beekeeper" class="about-photo-img" />
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+
+    <!-- The Hive -->
+    <section class="hive-section">
+      <div class="container">
+        <div class="hive-inner slide-up">
+          <span class="about-label text-label">The Hive</span>
+          <p class="hive-body">What surprised me most about keeping bees is just how much goes into a functioning hive. Once a bee fully forms, it immediately becomes a cleaning bee, then a nurse bee after a few days, then moves to wax and comb production, and finally, guarding and foraging. My favorite part is watching how much more efficient the hive gets over time.</p>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- The Garden -->
+    <section class="garden-section">
+      <div class="container">
+        <div class="about-grid about-grid--flip">
+
+          <div class="about-photo garden-photo slide-up">
+            <div class="photo-placeholder" aria-label="Photo coming soon">
+              <svg viewBox="0 0 100 115" fill="none" class="photo-hex-icon" aria-hidden="true">
+                <path d="M50 5L95 28.75V75.25L50 99L5 75.25V28.75L50 5Z" stroke="#006C32" stroke-width="0.8" opacity="0.5"/>
+                <path d="M50 22L79 38.5V71.5L50 88L21 71.5V38.5L50 22Z" stroke="#006C32" stroke-width="0.6" opacity="0.3"/>
+                <path d="M50 39L63 46.5V61.5L50 69L37 61.5V46.5L50 39Z" fill="#006C32" opacity="0.08"/>
+              </svg>
+              <p class="photo-label">Photo coming soon</p>
+            </div>
+          </div>
+
+          <div class="about-text slide-up" style="transition-delay: 150ms;">
+            <span class="about-label text-label">The Garden</span>
+            <p class="about-body">My hives are up on my roof, surrounded by a little oasis compared to the rest of Manhattan. The garden is tucked away in a neighborhood called Turtle Bay Gardens, blocked off from the city by brownstones. We recently planted lavender and all kinds of flowers, which completely changed the taste of the honey — it's creamy and sweet with a caramel color now. Neither my bees nor I are going anywhere.</p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+</BaseLayout>
+
+
+<style>
+
+  .about-page {
+    background-color: var(--color-bg);
+    min-height: 80vh;
+  }
+
+  /* Page header */
+  .page-header {
+    position: relative;
+    padding-top: var(--space-xl);
+    padding-bottom: var(--space-lg);
+  }
+
+  .page-header-inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .page-eyebrow {
+    color: var(--color-green);
+    letter-spacing: 0.2em;
+  }
+
+  .page-title {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-weight: var(--font-weight-heading-bold);
+    font-size: clamp(3rem, 9vw, 7rem);
+    line-height: 0.92;
+    letter-spacing: -0.025em;
+    color: var(--color-text-on-dark);
+    margin: 0;
+    font-feature-settings: 'liga' 1, 'kern' 1;
+  }
+
+  .page-rule {
+    position: absolute;
+    bottom: 0;
+    left: var(--space-md);
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg,
+      var(--color-green) 0%,
+      rgba(0, 108, 50, 0.2) 30%,
+      transparent 65%);
+    opacity: 0.5;
+  }
+
+  /* Shared section label */
+  .about-label {
+    color: var(--color-green);
+    letter-spacing: 0.16em;
+    display: block;
+    margin-bottom: var(--space-xs);
+  }
+
+  /* Shared 2-col grid */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg);
+    align-items: start;
+  }
+
+  .about-grid--flip {
+    direction: rtl;
+  }
+
+  .about-grid--flip > * {
+    direction: ltr;
+  }
+
+  /* ── The Beekeeper section ───────────────────────────────────────────────── */
+
+  .about-section {
+    padding-block: var(--space-lg);
+  }
+
+  .about-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .about-heading {
+    font-family: var(--font-heading);
+    font-weight: var(--font-weight-heading-bold);
+    font-size: var(--text-h3);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--color-text-on-dark);
+    margin: 0;
+  }
+
+  .about-body {
+    font-family: var(--font-body);
+    font-size: var(--text-body-lg);
+    color: rgba(237, 236, 232, 0.55);
+    line-height: var(--leading-body);
+    margin: 0;
+  }
+
+  .about-photo {
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border: 2px solid #D4A030;
+  }
+
+  .about-photo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* ── The Hive section ───────────────────────────────────────────────────── */
+
+  .hive-section {
+    padding-block: var(--space-lg);
+    border-top: 1px solid rgba(0, 108, 50, 0.15);
+    border-bottom: 1px solid rgba(0, 108, 50, 0.15);
+  }
+
+  .hive-inner {
+    max-width: 52ch;
+  }
+
+  .hive-body {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: clamp(1.3rem, 2.5vw, 1.85rem);
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    color: rgba(237, 236, 232, 0.65);
+    margin: 0;
+  }
+
+  /* ── The Garden section ─────────────────────────────────────────────────── */
+
+  .garden-section {
+    padding-block: var(--space-lg);
+  }
+
+  .garden-photo {
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+  }
+
+  .photo-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(140deg, #0A1A0E 0%, #003018 60%, #005A28 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+  }
+
+  .photo-hex-icon { width: 72px; height: auto; }
+
+  .photo-label {
+    font-family: var(--font-body);
+    font-size: var(--text-body-xs);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.3);
+    margin: 0;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .about-grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-md);
+    }
+
+    .about-grid--flip {
+      direction: ltr;
+    }
+
+    .about-photo,
+    .garden-photo { order: -1; aspect-ratio: 4 / 3; }
+
+    .page-rule { left: var(--space-sm); }
+  }
+
+</style>

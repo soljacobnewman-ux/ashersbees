@@ -1,0 +1,512 @@
+/* =============================================================================
+   ASHER'S BEES — DESIGN SYSTEM
+   ashersbees.nyc
+   ============================================================================= */
+
+/* Fonts: Cormorant Garamond (editorial serif) + DM Sans (clean body).
+   Loaded via <link> tags in BaseLayout.astro for performance.
+   The old Atkinson local font has been removed from astro.config.mjs. */
+
+/* -----------------------------------------------------------------------------
+   DESIGN TOKENS
+   ----------------------------------------------------------------------------- */
+
+:root {
+
+  /* --- Colors --- */
+
+  /* Core palette */
+  --color-bg:           #0A0A0A;
+  --color-accent:       #D4A030;
+  --color-accent-dark:  #B8860B;
+  --color-surface:      #FAF8F5;
+  --color-text-muted:   #6B6B6B;
+  --color-border:       #E5E0D8;
+
+  /* Feature colors — emerald green palette */
+  --color-green:        #006C32;
+  --color-green-dark:   #004D25;
+
+  /* Derived text colors */
+  --color-text-on-dark:   #EDECE8;   /* warm off-white for text on --color-bg */
+  --color-text-on-light:  #0A0A0A;   /* near-black for text on --color-surface */
+
+  /* Semantic aliases used in components */
+  --color-link:         var(--color-accent);
+  --color-link-hover:   var(--color-accent-dark);
+
+
+  /* --- Typography --- */
+
+  --font-heading: 'Cormorant Garamond', Georgia, serif;
+  --font-body:    'DM Sans', system-ui, sans-serif;
+
+  --font-weight-body-light:   300;
+  --font-weight-body-regular: 400;
+  --font-weight-body-medium:  500;
+  --font-weight-heading-regular: 400;   /* Cormorant at 400 is beautiful for display */
+  --font-weight-heading-semi: 600;
+  --font-weight-heading-bold: 700;
+
+  /* Fluid heading scale — H1 anchors the scale, each step is ~75% of the step above */
+  --text-h1: clamp(2.5rem,  5vw,   4.5rem);
+  --text-h2: clamp(1.875rem, 3.5vw, 3rem);
+  --text-h3: clamp(1.5rem,  2.5vw,  2.25rem);
+  --text-h4: clamp(1.25rem, 1.8vw,  1.75rem);
+  --text-h5: clamp(1.1rem,  1.4vw,  1.35rem);
+  --text-h6: 1rem;
+
+  --text-body-lg:  1.1875rem;  /* 19px — comfortable long-form reading */
+  --text-body:     1rem;       /* 16px base */
+  --text-body-sm:  0.875rem;   /* 14px captions, labels */
+  --text-body-xs:  0.75rem;    /* 12px fine print */
+
+  --leading-heading: 1.1;
+  --leading-body:    1.7;
+
+  --tracking-heading: -0.02em;
+  --tracking-body:     0em;
+  --tracking-wide:     0.08em;  /* all-caps labels */
+
+
+  /* --- Spacing (8px base grid) --- */
+
+  --space-xs:  8px;
+  --space-sm:  16px;
+  --space-md:  24px;
+  --space-lg:  40px;
+  --space-xl:  76px;
+
+  /* Fine-grained steps within the grid */
+  --space-2xs: 4px;
+  --space-3xs: 2px;
+
+
+  /* --- Layout --- */
+
+  --max-width:   1200px;
+  --prose-width: 720px;
+
+  /* Horizontal page padding at different breakpoints */
+  --page-gutter-sm: var(--space-sm);
+  --page-gutter-md: var(--space-md);
+  --page-gutter-lg: var(--space-md);
+
+
+  /* --- Border --- */
+
+  --radius-sm:  4px;
+  --radius-md:  8px;
+  --radius-lg:  16px;
+  --radius-xl:  24px;
+  --radius-full: 9999px;
+
+
+  /* --- Elevation / Shadow --- */
+
+  --shadow-sm:
+    0 1px 2px rgba(0, 0, 0, 0.12),
+    0 1px 4px rgba(0, 0, 0, 0.08);
+
+  --shadow-md:
+    0 2px 8px  rgba(0, 0, 0, 0.14),
+    0 8px 24px rgba(0, 0, 0, 0.10);
+
+  --shadow-lg:
+    0 4px 16px rgba(0, 0, 0, 0.16),
+    0 16px 48px rgba(0, 0, 0, 0.12);
+
+  --shadow-accent:
+    0 4px 24px rgba(212, 160, 48, 0.25);
+
+
+  /* --- Motion --- */
+
+  --duration-fast:   210ms;
+  --duration-base:   350ms;
+  --duration-slow:   560ms;
+  --duration-slower: 840ms;
+
+  --ease-out:      cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out:   cubic-bezier(0.45, 0, 0.55, 1);
+  --ease-spring:   cubic-bezier(0.34, 1.56, 0.64, 1);
+
+
+  /* --- Z-index scale --- */
+
+  --z-base:    0;
+  --z-raised:  10;
+  --z-overlay: 100;
+  --z-modal:   200;
+  --z-toast:   300;
+}
+
+
+/* -----------------------------------------------------------------------------
+   BASE RESET & GLOBAL ELEMENT STYLES
+   ----------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 100%;          /* respect user preferences */
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-body-lg);
+  font-weight: var(--font-weight-body-regular);
+  line-height: var(--leading-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-text-on-dark);
+  background-color: var(--color-bg);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+
+/* --- Headings --- */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: var(--font-weight-heading-bold);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
+  color: var(--color-text-on-dark);
+}
+
+h1 { font-size: var(--text-h1); }
+h2 { font-size: var(--text-h2); }
+h3 { font-size: var(--text-h3); }
+h4 { font-size: var(--text-h4); }
+h5 { font-size: var(--text-h5); font-weight: var(--font-weight-heading-semi); }
+h6 { font-size: var(--text-h6); font-weight: var(--font-weight-heading-semi); text-transform: uppercase; letter-spacing: var(--tracking-wide); }
+
+
+/* --- Links --- */
+
+a {
+  color: var(--color-link);
+  text-decoration: none;
+  transition: color var(--duration-base) var(--ease-out);
+}
+
+a:hover {
+  color: var(--color-link-hover);
+}
+
+
+/* --- Body copy --- */
+
+p {
+  margin-bottom: 1em;
+}
+
+strong, b {
+  font-weight: var(--font-weight-body-medium);
+}
+
+em, i {
+  font-style: italic;
+}
+
+small {
+  font-size: var(--text-body-sm);
+}
+
+
+/* --- Lists --- */
+
+ul, ol {
+  padding-left: 1.5em;
+}
+
+li {
+  margin-bottom: 0.35em;
+}
+
+
+/* --- Media --- */
+
+img, video, svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+img {
+  border-radius: 0;
+}
+
+
+/* --- Inline code --- */
+
+code {
+  font-family: 'Fira Code', 'Cascadia Code', 'Menlo', monospace;
+  font-size: 0.875em;
+  padding: 0.15em 0.4em;
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-sm);
+}
+
+
+/* --- Code blocks --- */
+
+pre {
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--color-border);
+}
+
+pre > code {
+  all: unset;
+  font-family: 'Fira Code', 'Cascadia Code', 'Menlo', monospace;
+  font-size: var(--text-body-sm);
+  line-height: 1.6;
+}
+
+
+/* --- Blockquote --- */
+
+blockquote {
+  border-left: 3px solid var(--color-accent);
+  padding-left: var(--space-md);
+  margin: var(--space-md) 0;
+  font-size: var(--text-h5);
+  font-family: var(--font-heading);
+  font-weight: var(--font-weight-heading-semi);
+  font-style: normal;
+  color: var(--color-text-on-dark);
+  line-height: 1.4;
+}
+
+
+/* --- Dividers --- */
+
+hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: var(--space-lg) 0;
+}
+
+
+/* --- Tables --- */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-body-sm);
+}
+
+th, td {
+  text-align: left;
+  padding: var(--space-xs) var(--space-sm);
+  border-bottom: 1px solid var(--color-border);
+}
+
+th {
+  font-family: var(--font-heading);
+  font-weight: var(--font-weight-heading-semi);
+  font-size: var(--text-body-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-muted);
+}
+
+
+/* --- Form elements --- */
+
+input, textarea, select {
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+}
+
+
+/* --- Focus styles --- */
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+
+/* --- Selection --- */
+
+::selection {
+  background-color: rgba(212, 160, 48, 0.3);
+  color: var(--color-text-on-dark);
+}
+
+
+/* -----------------------------------------------------------------------------
+   LAYOUT UTILITIES
+   ----------------------------------------------------------------------------- */
+
+/* Full-width container with max-width and centered */
+.container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin-inline: auto;
+  padding-inline: var(--page-gutter-lg);
+}
+
+/* Narrower container for long-form reading */
+.container--prose {
+  width: 100%;
+  max-width: var(--prose-width);
+  margin-inline: auto;
+  padding-inline: var(--page-gutter-sm);
+}
+
+/* Section with generous vertical breathing room */
+.section {
+  padding-block: var(--space-lg);
+}
+
+.section--xl {
+  padding-block: var(--space-xl);
+}
+
+/* Light-surface panel — for content cards and article areas */
+.surface {
+  background-color: var(--color-surface);
+  color: var(--color-text-on-light);
+}
+
+.surface h1,
+.surface h2,
+.surface h3,
+.surface h4,
+.surface h5,
+.surface h6 {
+  color: var(--color-text-on-light);
+}
+
+.surface a {
+  color: var(--color-accent-dark);
+}
+
+.surface a:hover {
+  color: var(--color-accent);
+}
+
+.surface code {
+  background-color: rgba(0, 0, 0, 0.06);
+  border-color: var(--color-border);
+}
+
+
+/* -----------------------------------------------------------------------------
+   TYPOGRAPHY UTILITIES
+   ----------------------------------------------------------------------------- */
+
+.text-muted   { color: var(--color-text-muted); }
+.text-accent  { color: var(--color-accent); }
+.text-surface { color: var(--color-surface); }
+
+.text-label {
+  font-family: var(--font-heading);
+  font-size: var(--text-body-xs);
+  font-weight: var(--font-weight-heading-semi);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-muted);
+}
+
+.text-display {
+  font-family: var(--font-heading);
+  font-weight: var(--font-weight-heading-bold);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
+}
+
+/* Long-form article / MDX content wrapper */
+.prose {
+  max-width: var(--prose-width);
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  margin-top: 1.75em;
+  margin-bottom: 0.5em;
+}
+
+.prose h1:first-child,
+.prose h2:first-child {
+  margin-top: 0;
+}
+
+.prose p {
+  margin-bottom: 1.5em;
+}
+
+.prose ul,
+.prose ol {
+  margin-bottom: 1.5em;
+}
+
+.prose li {
+  margin-bottom: 0.5em;
+}
+
+.prose img {
+  margin-block: var(--space-md);
+  border-radius: var(--radius-lg);
+}
+
+.prose blockquote {
+  margin-block: var(--space-md);
+}
+
+
+/* -----------------------------------------------------------------------------
+   RESPONSIVE OVERRIDES
+   ----------------------------------------------------------------------------- */
+
+@media (max-width: 768px) {
+  body {
+    font-size: var(--text-body);
+  }
+
+  .container {
+    padding-inline: var(--page-gutter-sm);
+  }
+
+  .section {
+    padding-block: var(--space-md);
+  }
+
+  .section--xl {
+    padding-block: var(--space-lg);
+  }
+}
+
+
+/* -----------------------------------------------------------------------------
+   REDUCED MOTION SAFETY NET
+   (animations.css adds more granular overrides)
+   ----------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
